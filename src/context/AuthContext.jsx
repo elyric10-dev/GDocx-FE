@@ -44,6 +44,13 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized)
   }, [])
 
+  const signup = useCallback(async (email, password, fullName) => {
+    authService.clearTokens()
+    const data = await authService.register(email, password, fullName)
+    setUser({ id: data.user_id, email: data.email })
+    return data
+  }, [])
+
   const login = useCallback(async (email, password) => {
     authService.clearTokens()
     const data = await authService.login(email, password)
@@ -61,11 +68,12 @@ export function AuthProvider({ children }) {
       user,
       loading,
       isAuthenticated: Boolean(user),
+      signup,
       login,
       logout,
       clearSession,
     }),
-    [user, loading, login, logout, clearSession],
+    [user, loading, signup, login, logout, clearSession],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -165,13 +165,29 @@ export default function DashboardPage() {
   const loadDocuments = useCallback(async () => {
     setError('')
     setLoading(true)
-    try {
+
+    async function fetchDocuments() {
       const [owned, shared] = await Promise.all([
         documentService.list(),
         documentService.listShared(),
       ])
-      setOwnedDocuments(owned)
-      setSharedDocuments(shared)
+      return { owned, shared }
+    }
+
+    try {
+      let result
+      try {
+        result = await fetchDocuments()
+      } catch (err) {
+        if (err.response?.status === 503) {
+          await new Promise((resolve) => window.setTimeout(resolve, 500))
+          result = await fetchDocuments()
+        } else {
+          throw err
+        }
+      }
+      setOwnedDocuments(result.owned)
+      setSharedDocuments(result.shared)
     } catch (err) {
       if (err.response?.status === 401) {
         return

@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-// import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-export default function LoginPage() {
-  const { login, isAuthenticated, loading } = useAuth()
+export default function SignUpPage() {
+  const { signup, isAuthenticated, loading } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
-  const from = location.state?.from?.pathname || '/'
 
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -19,23 +18,33 @@ export default function LoginPage() {
   }, [])
 
   if (!loading && isAuthenticated) {
-    return <Navigate to={from} replace />
+    return <Navigate to="/" replace />
   }
 
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
-    setSubmitting(true)
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
+
+    setSubmitting(true)
     try {
-      await login(email, password)
-      navigate(from, { replace: true })
+      await signup(email, password, fullName.trim() || undefined)
+      navigate('/', { replace: true })
     } catch (err) {
-      const message =
-        err.response?.data?.detail ||
-        err.message ||
-        'Unable to sign in. Please try again.'
-      setError(typeof message === 'string' ? message : 'Invalid email or password')
+      const detail = err.response?.data?.detail
+      if (Array.isArray(detail)) {
+        setError(detail.map((d) => d.msg).join(' '))
+      } else {
+        setError(
+          typeof detail === 'string'
+            ? detail
+            : err.message || 'Unable to create account. Please try again.',
+        )
+      }
     } finally {
       setSubmitting(false)
     }
@@ -46,7 +55,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">GDocx</h1>
-          <p className="mt-2 text-sm text-slate-600">Sign in to your account</p>
+          <p className="mt-2 text-sm text-slate-600">Create a new account</p>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -56,6 +65,21 @@ export default function LoginPage() {
                 {error}
               </div>
             )}
+
+            <div>
+              <label htmlFor="fullName" className="mb-1.5 block text-sm font-medium text-slate-700">
+                Full name
+              </label>
+              <input
+                id="fullName"
+                type="text"
+                autoComplete="name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                placeholder="Jane Doe"
+              />
+            </div>
 
             <div>
               <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
@@ -80,10 +104,29 @@ export default function LoginPage() {
               <input
                 id="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                placeholder="Min. 8 characters"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                Confirm password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 placeholder="••••••••"
               />
@@ -94,16 +137,16 @@ export default function LoginPage() {
               disabled={submitting}
               className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {submitting ? 'Signing in…' : 'Sign in'}
+              {submitting ? 'Creating account…' : 'Create account'}
             </button>
           </form>
 
-          {/* <p className="mt-6 text-center text-sm text-slate-500">
-            Don&apos;t have an account?{' '}
-            <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-700">
-              Sign up
+          <p className="mt-6 text-center text-sm text-slate-500">
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-700">
+              Sign in
             </Link>
-          </p> */}
+          </p>
         </div>
       </div>
     </div>

@@ -20,6 +20,14 @@ export const authService = {
     localStorage.removeItem(REFRESH_TOKEN_KEY)
   },
 
+  async register(email, password, fullName) {
+    const payload = { email, password }
+    if (fullName) payload.full_name = fullName
+    const { data } = await api.post('/auth/register', payload)
+    this.setTokens(data)
+    return data
+  },
+
   async login(email, password) {
     const { data } = await api.post('/auth/login', { email, password })
     this.setTokens(data)

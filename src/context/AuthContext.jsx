@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { AUTH_UNAUTHORIZED_EVENT } from '../services/api'
 import { authService } from '../services/authService'
 
 const AuthContext = createContext(null)
@@ -6,6 +7,11 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  const clearSession = useCallback(() => {
+    authService.clearTokens()
+    setUser(null)
+  }, [])
 
   const restoreSession = useCallback(async () => {
     const token = authService.getAccessToken()
@@ -19,18 +25,27 @@ export function AuthProvider({ children }) {
       const profile = await authService.getMe()
       setUser(profile)
     } catch {
-      authService.clearTokens()
-      setUser(null)
+      clearSession()
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [clearSession])
 
   useEffect(() => {
     restoreSession()
   }, [restoreSession])
 
+  useEffect(() => {
+    function handleUnauthorized() {
+      setUser(null)
+    }
+
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized)
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized)
+  }, [])
+
   const login = useCallback(async (email, password) => {
+    authService.clearTokens()
     const data = await authService.login(email, password)
     setUser({ id: data.user_id, email: data.email })
     return data
@@ -48,8 +63,9 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       login,
       logout,
+      clearSession,
     }),
-    [user, loading, login, logout],
+    [user, loading, login, logout, clearSession],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

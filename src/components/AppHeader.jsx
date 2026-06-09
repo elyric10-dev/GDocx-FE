@@ -1,7 +1,14 @@
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function AppHeader({ children }) {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleLogout() {
+    await logout()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <header className="border-b border-slate-200 bg-white">
@@ -11,7 +18,7 @@ export default function AppHeader({ children }) {
           <span className="text-sm text-slate-600">{user?.email}</span>
           <button
             type="button"
-            onClick={logout}
+            onClick={handleLogout}
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
           >
             Sign out

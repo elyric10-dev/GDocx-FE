@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
 import ShareModal from '../components/ShareModal'
 import { useAuth } from '../context/AuthContext'
 import { documentService } from '../services/documentService'
+import { importFileAsDocument } from '../utils/importDocument'
 
 function formatDate(value) {
   return new Date(value).toLocaleString(undefined, {
@@ -157,7 +158,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [creating, setCreating] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [shareDocument, setShareDocument] = useState(null)
+  const fileInputRef = useRef(null)
 
   const loadDocuments = useCallback(async () => {
     setError('')
@@ -198,6 +201,31 @@ export default function DashboardPage() {
       setError(typeof message === 'string' ? message : 'Failed to create document')
     } finally {
       setCreating(false)
+    }
+  }
+
+  function handleUploadClick() {
+    fileInputRef.current?.click()
+  }
+
+  async function handleFileChange(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    setUploading(true)
+    setError('')
+
+    try {
+      const { title, contentJson } = await importFileAsDocument(file)
+      const document = await documentService.create(title, contentJson)
+      navigate(`/documents/${document.id}`)
+    } catch (err) {
+      const message =
+        err.response?.data?.detail || err.message || 'Failed to import document'
+      setError(typeof message === 'string' ? message : 'Failed to import document')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -258,14 +286,31 @@ export default function DashboardPage() {
             <h2 className="text-2xl font-bold text-slate-900">Your documents</h2>
             <p className="mt-1 text-sm text-slate-600">Create, edit, and share your documents.</p>
           </div>
-          <button
-            type="button"
-            onClick={handleCreateDocument}
-            disabled={creating}
-            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {creating ? 'Creating…' : 'New document'}
-          </button>
+          <div className="flex items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".txt,.md,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={handleUploadClick}
+              disabled={uploading || creating}
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {uploading ? 'Importing…' : 'Upload file'}
+            </button>
+            <button
+              type="button"
+              onClick={handleCreateDocument}
+              disabled={creating || uploading}
+              className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {creating ? 'Creating…' : 'New document'}
+            </button>
+          </div>
         </div>
 
         {error && (

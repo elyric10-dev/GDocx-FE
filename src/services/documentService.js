@@ -21,8 +21,12 @@ export const documentService = {
     return data
   },
 
-  async create(title = 'Untitled') {
-    const { data } = await api.post('/documents', { title })
+  async create(title = 'Untitled', contentJson) {
+    const payload = { title }
+    if (contentJson !== undefined) {
+      payload.content_json = contentJson
+    }
+    const { data } = await api.post('/documents', payload)
     return data
   },
 

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 function MenuDropdown({ label, children }) {
   const [open, setOpen] = useState(false)
@@ -47,8 +46,6 @@ function MenuItem({ onClick, children }) {
 }
 
 export default function EditorMenuBar({ editor, onDownload }) {
-  const navigate = useNavigate()
-
   function runEditorAction(action) {
     if (!editor) return
     action()
@@ -59,15 +56,6 @@ export default function EditorMenuBar({ editor, onDownload }) {
       <MenuDropdown label="File">
         {({ close }) => (
           <>
-            <MenuItem
-              onClick={() => {
-                navigate('/')
-                close()
-              }}
-            >
-              Back to dashboard
-            </MenuItem>
-            <div className="my-1 border-t border-[#dadce0]" />
             <MenuItem
               onClick={() => {
                 onDownload('html')

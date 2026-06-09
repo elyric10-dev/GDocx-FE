@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
-import HomePage from './pages/HomePage'
+import DashboardPage from './pages/DashboardPage'
+import EditorPage from './pages/EditorPage'
 import LoginPage from './pages/LoginPage'
 
 function App() {
@@ -11,7 +12,15 @@ function App() {
         path="/"
         element={
           <ProtectedRoute>
-            <HomePage />
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/documents/:id"
+        element={
+          <ProtectedRoute>
+            <EditorPage />
           </ProtectedRoute>
         }
       />

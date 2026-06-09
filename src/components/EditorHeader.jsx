@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import UserAvatarMenu from './UserAvatarMenu'
 
 function SaveStatus({ saveState }) {
   const labels = {
@@ -30,9 +30,6 @@ export default function EditorHeader({
   isOwner,
   onShare,
 }) {
-  const { user } = useAuth()
-  const initial = user?.email?.charAt(0).toUpperCase() || '?'
-
   return (
     <header className="border-b border-[#dadce0] bg-white">
       <div className="flex items-center gap-3 px-3 py-2">
@@ -75,12 +72,7 @@ export default function EditorHeader({
               Share
             </button>
           )}
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1a73e8] text-sm font-medium text-white"
-            title={user?.email}
-          >
-            {initial}
-          </div>
+          <UserAvatarMenu />
         </div>
       </div>
     </header>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppHeader from '../components/AppHeader'
+import ConfirmDialog from '../components/ConfirmDialog'
 import ShareModal from '../components/ShareModal'
 import { useAuth } from '../context/AuthContext'
 import { documentService } from '../services/documentService'
@@ -53,7 +54,7 @@ function SharedCountBadge({ count }) {
   )
 }
 
-function DocumentList({ documents, emptyMessage, onShare, variant = 'owned' }) {
+function DocumentList({ documents, emptyMessage, onShare, onDelete, deletingId, variant = 'owned' }) {
   const isShared = variant === 'shared'
   const rowAccent = isShared
     ? 'border-l-violet-500 hover:bg-violet-50/60'
@@ -92,15 +93,27 @@ function DocumentList({ documents, emptyMessage, onShare, variant = 'owned' }) {
               </p>
             </div>
           </Link>
-          {onShare && (
-            <button
-              type="button"
-              onClick={() => onShare(document)}
-              className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-white"
-            >
-              Share
-            </button>
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {onShare && (
+              <button
+                type="button"
+                onClick={() => onShare(document)}
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-white"
+              >
+                Share
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => onDelete(document)}
+                disabled={deletingId === document.id}
+                className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deletingId === document.id ? 'Deleting…' : 'Delete'}
+              </button>
+            )}
+          </div>
         </li>
       ))}
     </ul>
@@ -160,6 +173,8 @@ export default function DashboardPage() {
   const [creating, setCreating] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [shareDocument, setShareDocument] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
+  const [documentToDelete, setDocumentToDelete] = useState(null)
   const fileInputRef = useRef(null)
 
   const loadDocuments = useCallback(async () => {
@@ -249,7 +264,32 @@ export default function DashboardPage() {
     loadDocuments()
   }
 
-  function renderListContent(documents, emptyMessage, variant, onShare) {
+  function handleDeleteDocument(document) {
+    setDocumentToDelete(document)
+  }
+
+  async function confirmDeleteDocument() {
+    if (!documentToDelete) return
+
+    setDeletingId(documentToDelete.id)
+    setError('')
+
+    try {
+      await documentService.delete(documentToDelete.id)
+      setOwnedDocuments((current) =>
+        current.filter((item) => item.id !== documentToDelete.id),
+      )
+      setDocumentToDelete(null)
+    } catch (err) {
+      const message =
+        err.response?.data?.detail || err.message || 'Failed to delete document'
+      setError(typeof message === 'string' ? message : 'Failed to delete document')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  function renderListContent(documents, emptyMessage, variant, onShare, onDelete) {
     if (loading) {
       return (
         <div className="flex items-center justify-center px-6 py-16">
@@ -283,6 +323,8 @@ export default function DashboardPage() {
         documents={documents}
         emptyMessage={emptyMessage}
         onShare={onShare}
+        onDelete={onDelete}
+        deletingId={deletingId}
         variant={variant}
       />
     )
@@ -330,8 +372,16 @@ export default function DashboardPage() {
         </div>
 
         {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
+          <div className="mb-6 flex items-start justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <span>{error}</span>
+            <button
+              type="button"
+              onClick={() => setError('')}
+              className="shrink-0 text-red-500 transition hover:text-red-700"
+              aria-label="Dismiss error"
+            >
+              ✕
+            </button>
           </div>
         )}
 
@@ -343,7 +393,13 @@ export default function DashboardPage() {
             count={ownedDocuments.length}
             loading={loading}
           >
-            {renderListContent(ownedDocuments, 'No documents yet.', 'owned', setShareDocument)}
+            {renderListContent(
+              ownedDocuments,
+              'No documents yet.',
+              'owned',
+              setShareDocument,
+              handleDeleteDocument,
+            )}
           </DocumentSection>
 
           <DocumentSection
@@ -369,6 +425,23 @@ export default function DashboardPage() {
           onShared={handleShared}
         />
       )}
+
+      <ConfirmDialog
+        open={Boolean(documentToDelete)}
+        title="Delete document?"
+        message={
+          documentToDelete
+            ? `"${documentToDelete.title}" will be permanently deleted.`
+            : ''
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={Boolean(deletingId)}
+        onConfirm={confirmDeleteDocument}
+        onCancel={() => {
+          if (!deletingId) setDocumentToDelete(null)
+        }}
+      />
     </div>
   )
 }

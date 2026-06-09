@@ -39,6 +39,11 @@ export const documentService = {
     return data
   },
 
+  async delete(id) {
+    const { data } = await api.delete(`/documents/${id}`)
+    return data
+  },
+
   async share(documentId, userId) {
     const { data } = await api.post(`/documents/${documentId}/share`, {
       user_id: userId,

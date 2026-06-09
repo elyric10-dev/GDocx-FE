@@ -7,10 +7,10 @@ function ToolbarButton({ onClick, isActive, disabled, title, children, className
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className={`rounded-md px-2.5 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
+      className={`rounded p-1.5 text-sm transition disabled:cursor-not-allowed disabled:opacity-40 ${
         isActive
-          ? 'bg-indigo-100 text-indigo-700'
-          : 'text-slate-600 hover:bg-slate-100'
+          ? 'bg-[#c2e7ff] text-[#001d35]'
+          : 'text-[#444746] hover:bg-[#e8eaed]'
       } ${className}`}
     >
       {children}
@@ -19,10 +19,10 @@ function ToolbarButton({ onClick, isActive, disabled, title, children, className
 }
 
 function ToolbarDivider() {
-  return <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden="true" />
+  return <div className="mx-0.5 h-6 w-px bg-[#dadce0]" aria-hidden="true" />
 }
 
-export default function EditorToolbar({ editor }) {
+function EditorToolbarContent({ editor }) {
   const state = useEditorState({
     editor,
     selector: ({ editor: currentEditor }) => ({
@@ -42,10 +42,27 @@ export default function EditorToolbar({ editor }) {
     }),
   })
 
-  if (!editor || !state) return null
+  if (!state) return null
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 border-b border-slate-200 bg-slate-50 px-4 py-2">
+    <div className="mx-3 my-2 flex flex-wrap items-center gap-0.5 rounded-full border border-[#dadce0] bg-white px-3 py-1.5 shadow-sm">
+      <ToolbarButton
+        title="Undo"
+        disabled={!state.canUndo}
+        onClick={() => editor.chain().focus().undo().run()}
+      >
+        ↶
+      </ToolbarButton>
+      <ToolbarButton
+        title="Redo"
+        disabled={!state.canRedo}
+        onClick={() => editor.chain().focus().redo().run()}
+      >
+        ↷
+      </ToolbarButton>
+
+      <ToolbarDivider />
+
       <ToolbarButton
         title="Bold"
         isActive={state.isBold}
@@ -61,18 +78,18 @@ export default function EditorToolbar({ editor }) {
         <span className="italic">I</span>
       </ToolbarButton>
       <ToolbarButton
-        title="Strikethrough"
-        isActive={state.isStrike}
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-      >
-        <span className="line-through">S</span>
-      </ToolbarButton>
-      <ToolbarButton
         title="Underline"
         isActive={state.isUnderline}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
       >
         <span className="underline">U</span>
+      </ToolbarButton>
+      <ToolbarButton
+        title="Strikethrough"
+        isActive={state.isStrike}
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+      >
+        <span className="line-through">S</span>
       </ToolbarButton>
 
       <ToolbarDivider />
@@ -100,9 +117,7 @@ export default function EditorToolbar({ editor }) {
       </ToolbarButton>
       <ToolbarButton
         title="Paragraph"
-        isActive={
-          !state.isH1 && !state.isH2 && !state.isH3 && !state.isCodeBlock
-        }
+        isActive={!state.isH1 && !state.isH2 && !state.isH3 && !state.isCodeBlock}
         onClick={() => editor.chain().focus().setParagraph().run()}
       >
         P
@@ -115,21 +130,21 @@ export default function EditorToolbar({ editor }) {
         isActive={state.isBulletList}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
       >
-        • List
+        •
       </ToolbarButton>
       <ToolbarButton
         title="Numbered list"
         isActive={state.isOrderedList}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
       >
-        1. List
+        1.
       </ToolbarButton>
       <ToolbarButton
         title="Blockquote"
         isActive={state.isBlockquote}
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
       >
-        Quote
+        "
       </ToolbarButton>
       <ToolbarButton
         title="Code block"
@@ -144,23 +159,11 @@ export default function EditorToolbar({ editor }) {
       >
         ―
       </ToolbarButton>
-
-      <ToolbarDivider />
-
-      <ToolbarButton
-        title="Undo"
-        disabled={!state.canUndo}
-        onClick={() => editor.chain().focus().undo().run()}
-      >
-        Undo
-      </ToolbarButton>
-      <ToolbarButton
-        title="Redo"
-        disabled={!state.canRedo}
-        onClick={() => editor.chain().focus().redo().run()}
-      >
-        Redo
-      </ToolbarButton>
     </div>
   )
+}
+
+export default function EditorToolbar({ editor }) {
+  if (!editor) return null
+  return <EditorToolbarContent editor={editor} />
 }

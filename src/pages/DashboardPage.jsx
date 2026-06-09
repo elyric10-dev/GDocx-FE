@@ -78,15 +78,6 @@ function DocumentList({ documents, emptyMessage, onShare, variant = 'owned' }) {
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-medium text-slate-900">{document.title}</p>
-                {isShared ? (
-                  <span className="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-800">
-                    Shared with me
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-semibold text-indigo-800">
-                    Owned
-                  </span>
-                )}
                 {!isShared && <SharedCountBadge count={document.share_count} />}
               </div>
               <p className="mt-1 text-sm text-slate-500">
@@ -100,23 +91,15 @@ function DocumentList({ documents, emptyMessage, onShare, variant = 'owned' }) {
               </p>
             </div>
           </Link>
-          <div className="flex shrink-0 items-center gap-2">
-            {onShare && (
-              <button
-                type="button"
-                onClick={() => onShare(document)}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-white"
-              >
-                Share
-              </button>
-            )}
-            <Link
-              to={`/documents/${document.id}`}
-              className={`text-sm font-medium ${isShared ? 'text-violet-600 hover:text-violet-700' : 'text-indigo-600 hover:text-indigo-700'}`}
+          {onShare && (
+            <button
+              type="button"
+              onClick={() => onShare(document)}
+              className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-white"
             >
-              Open
-            </Link>
-          </div>
+              Share
+            </button>
+          )}
         </li>
       ))}
     </ul>

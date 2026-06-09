@@ -1,23 +1,27 @@
 import { useEffect } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import EditorToolbar from './EditorToolbar'
+import { editorExtensions } from '../utils/downloadDocument'
 
-export default function DocumentEditor({ content, onChange }) {
+export default function DocumentEditor({ content, onChange, onEditorReady }) {
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: [StarterKit, Underline],
+    extensions: editorExtensions,
     content,
     editorProps: {
       attributes: {
-        class: 'document-editor-content min-h-[60vh] px-8 py-6 outline-none focus:outline-none',
+        class: 'document-editor-content min-h-[70vh] outline-none focus:outline-none',
       },
     },
     onUpdate: ({ editor: currentEditor }) => {
       onChange(currentEditor.getJSON())
     },
   })
+
+  useEffect(() => {
+    if (editor) {
+      onEditorReady?.(editor)
+    }
+  }, [editor, onEditorReady])
 
   useEffect(() => {
     if (!editor || content === undefined) return
@@ -30,16 +34,11 @@ export default function DocumentEditor({ content, onChange }) {
 
   if (!editor) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-white">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1a73e8] border-t-transparent" />
       </div>
     )
   }
 
-  return (
-    <div className="bg-white">
-      <EditorToolbar editor={editor} />
-      <EditorContent editor={editor} />
-    </div>
-  )
+  return <EditorContent editor={editor} />
 }

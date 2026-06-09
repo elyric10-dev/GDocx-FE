@@ -1,23 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import AppHeader from '../components/AppHeader'
+import { useParams } from 'react-router-dom'
 import DocumentEditor from '../components/DocumentEditor'
+import EditorHeader from '../components/EditorHeader'
+import EditorMenuBar from '../components/EditorMenuBar'
+import EditorToolbar from '../components/EditorToolbar'
+import ShareModal from '../components/ShareModal'
+import { useAuth } from '../context/AuthContext'
 import { documentService } from '../services/documentService'
+import { downloadDocument } from '../utils/downloadDocument'
 
 const AUTOSAVE_INTERVAL_MS = 3000
 
 export default function EditorPage() {
   const { id } = useParams()
+  const { user } = useAuth()
   const [title, setTitle] = useState('')
   const [contentJson, setContentJson] = useState(null)
+  const [ownerId, setOwnerId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [saveState, setSaveState] = useState('saved')
+  const [editor, setEditor] = useState(null)
+  const [shareOpen, setShareOpen] = useState(false)
 
   const titleRef = useRef('')
   const contentRef = useRef(null)
   const dirtyRef = useRef(false)
   const savingRef = useRef(false)
+
+  const isOwner = ownerId && user?.id === ownerId
 
   const markDirty = useCallback(() => {
     dirtyRef.current = true
@@ -61,6 +72,7 @@ export default function EditorPage() {
         contentRef.current = document.content_json
         setTitle(document.title)
         setContentJson(document.content_json)
+        setOwnerId(document.owner_id)
         dirtyRef.current = false
         setSaveState('saved')
       } catch (err) {
@@ -87,6 +99,10 @@ export default function EditorPage() {
     return () => window.clearInterval(intervalId)
   }, [saveDocument])
 
+  const handleEditorReady = useCallback((editorInstance) => {
+    setEditor(editorInstance)
+  }, [])
+
   function handleTitleChange(event) {
     const nextTitle = event.target.value
     titleRef.current = nextTitle
@@ -100,70 +116,67 @@ export default function EditorPage() {
     markDirty()
   }
 
+  function handleDownload(format) {
+    if (!contentRef.current) return
+    downloadDocument(titleRef.current || 'Untitled', contentRef.current, format)
+  }
+
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-[#f8f9fa]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1a73e8] border-t-transparent" />
       </div>
     )
   }
 
   if (error && !contentJson) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <AppHeader>
-          <Link to="/" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
-            Back to dashboard
-          </Link>
-        </AppHeader>
-        <main className="mx-auto max-w-3xl px-6 py-12">
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
-        </main>
+      <div className="min-h-screen bg-[#f8f9fa] p-8">
+        <div className="mx-auto max-w-lg rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
       </div>
     )
   }
 
-  const saveLabel =
-    saveState === 'saving'
-      ? 'Saving…'
-      : saveState === 'unsaved'
-        ? 'Unsaved changes'
-        : saveState === 'error'
-          ? 'Save failed'
-          : 'All changes saved'
-
   return (
-    <div className="min-h-screen bg-slate-100">
-      <AppHeader>
-        <Link to="/" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
-          Dashboard
-        </Link>
-        <span className="text-sm text-slate-500">{saveLabel}</span>
-      </AppHeader>
+    <div className="flex min-h-screen flex-col bg-[#f8f9fa]">
+      <EditorHeader
+        title={title}
+        onTitleChange={handleTitleChange}
+        saveState={saveState}
+        isOwner={isOwner}
+        onShare={() => setShareOpen(true)}
+      />
 
-      <main className="mx-auto max-w-4xl px-4 py-8">
-        {error && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
+      <EditorMenuBar editor={editor} onDownload={handleDownload} />
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-200 px-8 py-6">
-            <input
-              type="text"
-              value={title}
-              onChange={handleTitleChange}
-              placeholder="Untitled document"
-              className="w-full border-0 bg-transparent text-3xl font-bold text-slate-900 outline-none placeholder:text-slate-400"
+      {editor && <EditorToolbar editor={editor} />}
+
+      {error && (
+        <div className="mx-4 mt-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      <main className="flex-1 overflow-auto px-4 pb-12 pt-2">
+        <div className="mx-auto max-w-[816px] bg-white shadow-[0_1px_3px_rgba(60,64,67,0.15)]">
+          <div className="px-12 py-10">
+            <DocumentEditor
+              content={contentJson}
+              onChange={handleContentChange}
+              onEditorReady={handleEditorReady}
             />
           </div>
-
-          <DocumentEditor content={contentJson} onChange={handleContentChange} />
         </div>
       </main>
+
+      {shareOpen && (
+        <ShareModal
+          document={{ id, title }}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </div>
   )
 }

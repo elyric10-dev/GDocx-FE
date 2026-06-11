@@ -108,15 +108,9 @@ export default function NewDocumentStrip({ busy, onBlank, onImport, onTemplate }
       <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-8 sm:px-8">
         <div className="mb-6 flex items-center gap-3">
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#4285f4] via-[#34a853] to-[#fbbc04] p-[2px] shadow-md"
+            className="h-9 w-1 shrink-0 rounded-full bg-gradient-to-b from-[var(--gdocx-blue)] via-[var(--gdocx-green)] to-[var(--gdocx-yellow)]"
             aria-hidden
-          >
-            <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-white">
-              <svg className="h-5 w-5 text-[var(--gdocx-blue)]" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z" />
-              </svg>
-            </div>
-          </div>
+          />
           <div>
             <h2 className="text-base font-semibold tracking-tight text-[var(--gdocx-text)]">
               Start a new document

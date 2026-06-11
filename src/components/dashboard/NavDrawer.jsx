@@ -3,6 +3,7 @@ import { cn } from '../../utils/cn'
 import BrandStripe from '../ui/BrandStripe'
 import ComingSoonDialog from '../ui/ComingSoonDialog'
 import LogoMark from '../ui/LogoMark'
+import LogoWordmark from '../ui/LogoWordmark'
 
 function NavItem({ icon, label, active, onClick }) {
   return (
@@ -170,9 +171,7 @@ export default function NavDrawer({ open, onClose }) {
         <div className="flex items-center justify-between border-b border-[var(--gdocx-border)]/60 px-4 py-4">
           <div className="flex items-center gap-3">
             <LogoMark size="sm" />
-            <span className="text-lg tracking-tight text-[var(--gdocx-text-secondary)]">
-              G<span className="font-medium text-[var(--gdocx-text)]">Docx</span>
-            </span>
+            <LogoWordmark size="md" />
           </div>
           <button
             type="button"

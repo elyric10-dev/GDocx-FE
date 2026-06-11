@@ -1,5 +1,6 @@
 import DecorativeBackground from './ui/DecorativeBackground'
 import LogoMark from './ui/LogoMark'
+import LogoWordmark from './ui/LogoWordmark'
 import { BrandDots } from './ui/BrandStripe'
 
 export default function LoginBackground() {
@@ -10,10 +11,8 @@ export default function LoginBackground() {
     >
       <div className="relative z-10 max-w-md">
         <div className="mb-6 flex items-center gap-3">
-          <LogoMark size="lg" />
-          <span className="text-2xl font-normal tracking-tight text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]">
-            G<span className="font-medium">Docx</span>
-          </span>
+          <LogoMark size="lg" className="[filter:drop-shadow(0_4px_14px_rgba(0,0,0,0.25))]" />
+          <LogoWordmark size="xl" variant="light" className="[text-shadow:0_1px_12px_rgba(0,0,0,0.35)]" />
         </div>
 
         <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.4)] lg:text-4xl xl:text-[2.75rem]">

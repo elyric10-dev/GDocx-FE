@@ -1,25 +1,42 @@
 import { cn } from '../../utils/cn'
 
+const SIZES = {
+  xs: 'gdocx-logo-mark--xs',
+  sm: 'gdocx-logo-mark--sm',
+  md: 'gdocx-logo-mark--md',
+  lg: 'gdocx-logo-mark--lg',
+}
+
+function LogoIcon() {
+  return (
+    <svg className="gdocx-logo-mark__svg" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M7 4h8l4 4v13a1.5 1.5 0 01-1.5 1.5H7A1.5 1.5 0 015.5 21V5.5A1.5 1.5 0 017 4z"
+        fill="white"
+        fillOpacity="0.95"
+      />
+      <path d="M15 4v4h4" fill="#e8f0fe" />
+      <path d="M15 4l4 4h-3a1 1 0 01-1-1V4z" fill="#4285f4" fillOpacity="0.85" />
+      <rect x="8" y="11" width="9" height="1.2" rx="0.6" fill="#4285f4" fillOpacity="0.9" />
+      <rect x="8" y="14" width="7" height="1.2" rx="0.6" fill="#34a853" fillOpacity="0.85" />
+      <rect x="8" y="17" width="5.5" height="1.2" rx="0.6" fill="#fbbc04" fillOpacity="0.9" />
+    </svg>
+  )
+}
+
 export default function LogoMark({ size = 'md', className }) {
-  const sizes = {
-    sm: { box: 'h-9 w-9 rounded-lg', icon: 'h-5 w-5' },
-    md: { box: 'h-11 w-11 rounded-xl', icon: 'h-6 w-6' },
-    lg: { box: 'h-11 w-11 rounded-xl', icon: 'h-6 w-6' },
-  }
-
-  const { box, icon } = sizes[size] || sizes.md
-
   return (
     <div
-      className={cn(
-        'gdocx-gradient-brand flex items-center justify-center shadow-lg shadow-[var(--gdocx-blue)]/30',
-        box,
-        className,
-      )}
+      className={cn('gdocx-logo-mark', SIZES[size] || SIZES.md, className)}
+      aria-hidden
     >
-      <svg className={cn(icon, 'text-white')} fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16z" />
-      </svg>
+      <div className="gdocx-logo-mark__glow" />
+      <div className="gdocx-logo-mark__frame">
+        <div className="gdocx-logo-mark__stripe" />
+        <div className="gdocx-logo-mark__inner">
+          <LogoIcon />
+        </div>
+      </div>
     </div>
   )
 }

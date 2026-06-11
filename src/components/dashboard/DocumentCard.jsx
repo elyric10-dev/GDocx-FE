@@ -127,28 +127,10 @@ function DocumentMenu({ doc, canManage, onShare, onDelete, deleting, menuUp = fa
       {open && (
         <GlassPanel
           role="menu"
+          variant="menu"
           className={cn('absolute right-0 z-50 w-[232px]', menuPositionClass)}
         >
-          <div className="relative overflow-hidden px-3 pb-1 pt-3">
-            <div className="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[var(--gdocx-blue)]/12 blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-3 -left-3 h-14 w-14 rounded-full bg-[var(--gdocx-green)]/10 blur-2xl" />
-
-            <div className="relative flex items-start gap-2.5">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e8f0fe] text-[var(--gdocx-blue)]">
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z" />
-                </svg>
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[var(--gdocx-text)]">{doc.title}</p>
-                <p className="text-[11px] text-[var(--gdocx-text-muted)]">Document actions</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mx-3 my-2 h-px bg-gradient-to-r from-transparent via-[var(--gdocx-border)] to-transparent" />
-
-          <div className="space-y-1 px-2 pb-2">
+          <div className="px-2 py-2">
             {showShare && (
               <DocumentMenuAction
                 title="Share"
@@ -166,6 +148,13 @@ function DocumentMenu({ doc, canManage, onShare, onDelete, deleting, menuUp = fa
                   setOpen(false)
                   onShare(doc)
                 }}
+              />
+            )}
+            {showShare && showDelete && (
+              <div
+                className="my-1.5 h-px bg-gradient-to-r from-transparent via-[var(--gdocx-border)] to-transparent"
+                role="separator"
+                aria-hidden
               />
             )}
             {showDelete && (

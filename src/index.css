@@ -209,6 +209,22 @@ body {
   }
 }
 
+.user-menu-enter {
+  animation: user-menu-enter 0.22s ease backwards;
+  transform-origin: top right;
+}
+
+@keyframes user-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .login-orb,
   .login-panel-orb,
@@ -216,6 +232,10 @@ body {
   .app-float-doc,
   .login-float-doc,
   .login-form-enter {
+    animation: none;
+  }
+
+  .user-menu-enter {
     animation: none;
   }
 }

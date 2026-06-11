@@ -357,7 +357,7 @@ export default function DashboardPage() {
                 ))}
           </div>
         ) : (
-          <ul className="overflow-visible rounded-xl border border-[#dadce0] bg-white">
+          <ul className="gdocx-doc-list overflow-visible">
             {displayedDocuments.length === 0 ? (
               <li className="py-20 text-center text-[#5f6368]">
                 {search.trim()

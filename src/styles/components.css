@@ -250,6 +250,141 @@
   }
 }
 
+/* Document cards */
+.gdocx-doc-card {
+  border: 1px solid color-mix(in srgb, var(--gdocx-border) 88%, #9aa0a6);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 2px 8px rgba(60, 64, 67, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.28s ease;
+}
+
+.gdocx-doc-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--gdocx-blue) 28%, var(--gdocx-border));
+  box-shadow:
+    0 14px 36px rgba(66, 133, 244, 0.14),
+    0 4px 12px rgba(60, 64, 67, 0.06);
+}
+
+.gdocx-doc-card__stripe {
+  height: 2px;
+  background: var(--gdocx-gradient-brand);
+  opacity: 0.75;
+}
+
+.gdocx-doc-card__preview {
+  background:
+    radial-gradient(ellipse 80% 70% at 20% 20%, rgba(66, 133, 244, 0.14), transparent 55%),
+    radial-gradient(ellipse 70% 60% at 85% 75%, rgba(52, 168, 83, 0.1), transparent 50%),
+    linear-gradient(160deg, #f4f8ff 0%, #f8f9fa 45%, #faf6ee 100%);
+}
+
+.gdocx-doc-card__preview--shared {
+  background:
+    radial-gradient(ellipse 80% 70% at 20% 20%, rgba(147, 51, 234, 0.12), transparent 55%),
+    radial-gradient(ellipse 70% 60% at 85% 75%, rgba(66, 133, 244, 0.08), transparent 50%),
+    linear-gradient(160deg, #f7f4ff 0%, #f8f9fa 45%, #f4f8ff 100%);
+}
+
+.gdocx-doc-card__paper {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 16px 32px rgba(60, 64, 67, 0.1),
+    0 2px 6px rgba(60, 64, 67, 0.05);
+  backdrop-filter: blur(6px);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gdocx-doc-card:hover .gdocx-doc-card__paper {
+  transform: translateY(-3px) rotate(-1.5deg);
+}
+
+.gdocx-doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(60, 64, 67, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.gdocx-doc-badge--violet {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(109, 40, 217, 0.88));
+  color: white;
+}
+
+.gdocx-doc-badge--green {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, rgba(52, 168, 83, 0.95), rgba(24, 128, 56, 0.9));
+  color: white;
+}
+
+.gdocx-doc-card__icon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  background: linear-gradient(135deg, #5b9bf5, var(--gdocx-blue-dark));
+  color: white;
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.28);
+}
+
+.gdocx-doc-card__icon--shared {
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.28);
+}
+
+.gdocx-doc-list {
+  overflow: visible;
+  border: 1px solid color-mix(in srgb, var(--gdocx-border) 88%, #9aa0a6);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 4px 20px rgba(60, 64, 67, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.gdocx-doc-list__row {
+  transition: background-color 0.2s ease;
+}
+
+.gdocx-doc-list__row:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(232, 240, 254, 0.55) 0%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+}
+
+.gdocx-doc-list__thumb {
+  border: 1px solid color-mix(in srgb, var(--gdocx-border) 70%, transparent);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(66, 133, 244, 0.12), transparent 60%),
+    #f8f9fa;
+}
+
+.gdocx-doc-list__thumb--shared {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(147, 51, 234, 0.12), transparent 60%),
+    #f8f9fa;
+}
+
 /* Motion */
 .gdocx-enter-fade-up {
   animation: gdocx-enter-fade-up 0.65s ease backwards;

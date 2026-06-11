@@ -4,20 +4,81 @@ import { cn } from '../../utils/cn'
 import GlassPanel from '../ui/GlassPanel'
 import { extractPreviewLines, formatOpenedDate } from '../../utils/documentPreview'
 
-function DocumentPreview({ title }) {
+const PREVIEW_LINE_COLORS = [
+  'bg-[#4285f4]/35',
+  'bg-[#34a853]/30',
+  'bg-[#fbbc04]/35',
+  'bg-[#e8eaed]',
+]
+
+function DocumentIcon({ className }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z" />
+    </svg>
+  )
+}
+
+function ShareBadge({ variant, count }) {
+  if (variant === 'shared-with-me') {
+    return (
+      <span className="gdocx-doc-badge gdocx-doc-badge--violet" title="Someone else shared this with you">
+        <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+        </svg>
+        Shared with me
+      </span>
+    )
+  }
+
+  if (variant === 'owned-shared' && count > 0) {
+    return (
+      <span className="gdocx-doc-badge gdocx-doc-badge--green" title="You shared this with others">
+        <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0018 8.92a3 3 0 10-3-3 3 3 0 003 3c0 .24-.04.47-.09.7l-7.05 4.12c.52.48 1.2.78 1.96.78a3 3 0 110 6 3 3 0 010-6z" />
+        </svg>
+        {count} shared
+      </span>
+    )
+  }
+
+  return null
+}
+
+function DocumentPreview({ title, shared = false, compact = false }) {
   const lines = extractPreviewLines(title)
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#f8f9fa] p-4">
-      <div className="relative mx-auto mt-2 h-[calc(100%-0.5rem)] max-w-[85%] rounded-t-sm border border-[#e8eaed] bg-white">
-        <div className="border-b border-[#e8eaed] px-3 py-2">
-          <p className="truncate text-[10px] font-semibold text-[#202124]">{lines[0]}</p>
+    <div
+      className={cn(
+        'relative h-full w-full overflow-hidden',
+        compact
+          ? shared
+            ? 'gdocx-doc-list__thumb--shared p-1'
+            : 'gdocx-doc-list__thumb p-1'
+          : cn('p-4', shared ? 'gdocx-doc-card__preview--shared' : 'gdocx-doc-card__preview'),
+      )}
+    >
+      <div
+        className={cn(
+          'gdocx-doc-card__paper relative mx-auto rounded-lg',
+          compact ? 'mt-1 h-[calc(100%-0.25rem)] max-w-[88%] rounded-md' : 'mt-2 h-[calc(100%-0.5rem)] max-w-[82%] rounded-t-md',
+        )}
+        style={{ transform: compact ? 'rotate(-2deg)' : 'rotate(-2.5deg)' }}
+      >
+        <div className="border-b border-[#e8eaed]/80 px-2.5 py-1.5">
+          <p className={cn('truncate font-semibold text-[#202124]', compact ? 'text-[7px]' : 'text-[10px]')}>
+            {lines[0]}
+          </p>
         </div>
-        <div className="space-y-1.5 px-3 py-2.5">
-          <div className="h-1 w-full rounded-full bg-[#e8eaed]" />
-          <div className="h-1 w-11/12 rounded-full bg-[#e8eaed]" />
-          <div className="h-1 w-4/5 rounded-full bg-[#e8eaed]" />
-          <div className="h-1 w-full rounded-full bg-[#f1f3f4]" />
+        <div className={cn('space-y-1', compact ? 'px-2 py-1.5' : 'space-y-1.5 px-3 py-2.5')}>
+          {PREVIEW_LINE_COLORS.map((color, index) => (
+            <div
+              key={index}
+              className={cn('rounded-full', color, compact ? 'h-0.5' : 'h-1')}
+              style={{ width: `${92 - index * 14}%` }}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -201,47 +262,37 @@ export function DocumentGridCard({
       className="group dashboard-card-enter relative z-0 flex flex-col has-[[data-open=true]]:z-50"
       style={style}
     >
-      <div className="relative flex flex-col rounded-xl border border-[#dadce0] bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[#c4c7c5] hover:shadow-md">
-        <Link to={`/documents/${document.id}`} className="block">
-          <div className="relative h-[140px] overflow-hidden rounded-t-xl">
-            <DocumentPreview title={document.title} />
-            {isSharedWithMe && (
-              <span
-                className="absolute right-2 top-2 rounded-full bg-violet-600/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm"
-                title="Someone else shared this with you"
-              >
-                Shared with me
-              </span>
-            )}
-            {canManage && document.share_count > 0 && (
-              <span
-                className="absolute right-2 top-2 rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm"
-                title="You shared this with others"
-              >
-                {document.share_count} shared
-              </span>
-            )}
-          </div>
+      <div className="gdocx-doc-card relative flex flex-col rounded-2xl">
+        <div className="overflow-hidden rounded-2xl">
+          <div className="gdocx-doc-card__stripe" aria-hidden />
 
-          <div
-            className={`flex items-start gap-2 border-t border-[#e8eaed] px-3 py-2.5 ${canManage ? 'pr-10' : ''}`}
-          >
-            <svg className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#4285f4]" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z" />
-            </svg>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-[#202124]">{document.title}</p>
-              <p className="mt-0.5 truncate text-xs text-[#5f6368]">
-                {isSharedWithMe && document.owner_email
-                  ? `${document.owner_email} · `
-                  : ''}
-                Opened {formatOpenedDate(document.updated_at)}
-              </p>
+          <Link to={`/documents/${document.id}`} className="block">
+            <div className="relative h-[148px] overflow-hidden">
+              <DocumentPreview title={document.title} shared={isSharedWithMe} />
+              <div className="absolute right-2 top-2 flex flex-col items-end gap-1">
+                {isSharedWithMe && <ShareBadge variant="shared-with-me" />}
+                {canManage && document.share_count > 0 && (
+                  <ShareBadge variant="owned-shared" count={document.share_count} />
+                )}
+              </div>
             </div>
-          </div>
-        </Link>
 
-        <div className="absolute bottom-2 right-1.5 z-10">
+            <div className={cn('flex items-center gap-3 px-3 py-3', canManage && 'pr-10')}>
+              <div className={cn('gdocx-doc-card__icon', isSharedWithMe && 'gdocx-doc-card__icon--shared')}>
+                <DocumentIcon className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-[var(--gdocx-text)]">{document.title}</p>
+                <p className="mt-0.5 truncate text-xs text-[var(--gdocx-text-secondary)]">
+                  {isSharedWithMe && document.owner_email ? `${document.owner_email} · ` : ''}
+                  Opened {formatOpenedDate(document.updated_at)}
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        <div className="absolute bottom-2.5 right-1.5 z-20">
           <DocumentMenu
             doc={document}
             canManage={canManage}
@@ -267,28 +318,20 @@ export function DocumentListRow({
   const isSharedWithMe = !canManage && variant === 'shared'
 
   return (
-    <li className="group flex items-center gap-4 border-b border-[#e8eaed] px-2 py-3 transition hover:bg-[#f8f9fa]">
+    <li className="gdocx-doc-list__row group flex items-center gap-4 border-b border-[#e8eaed]/80 px-3 py-3 last:border-b-0">
       <Link to={`/documents/${document.id}`} className="flex min-w-0 flex-1 items-center gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#e8eaed] bg-[#f8f9fa]">
-          <svg className="h-5 w-5 text-[#4285f4]" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z" />
-          </svg>
+        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
+          <DocumentPreview title={document.title} shared={isSharedWithMe} compact />
         </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="truncate font-medium text-[#202124]">{document.title}</p>
-            {isSharedWithMe && (
-              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
-                Shared with me
-              </span>
-            )}
+            <p className="truncate font-semibold text-[var(--gdocx-text)]">{document.title}</p>
+            {isSharedWithMe && <ShareBadge variant="shared-with-me" />}
             {canManage && document.share_count > 0 && (
-              <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                Shared · {document.share_count}
-              </span>
+              <ShareBadge variant="owned-shared" count={document.share_count} />
             )}
           </div>
-          <p className="mt-0.5 text-sm text-[#5f6368]">
+          <p className="mt-0.5 text-sm text-[var(--gdocx-text-secondary)]">
             {isSharedWithMe && document.owner_email ? `${document.owner_email} · ` : ''}
             Opened {formatOpenedDate(document.updated_at)}
           </p>

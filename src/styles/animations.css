@@ -1,0 +1,77 @@
+@keyframes gdocx-orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(24px, -18px) scale(1.06);
+  }
+  66% {
+    transform: translate(-16px, 12px) scale(0.96);
+  }
+}
+
+@keyframes gdocx-doc-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--gdocx-float-rotate, 0deg));
+  }
+  50% {
+    transform: translateY(-12px) rotate(calc(var(--gdocx-float-rotate, 0deg) + 1.5deg));
+  }
+}
+
+@keyframes gdocx-enter-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gdocx-enter-menu {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dashboard-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes editor-canvas-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gdocx-orb,
+  .gdocx-float-doc,
+  .gdocx-enter-fade-up,
+  .gdocx-enter-menu,
+  .dashboard-card-enter,
+  .editor-canvas-enter {
+    animation: none !important;
+  }
+}

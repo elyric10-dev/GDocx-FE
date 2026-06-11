@@ -5,6 +5,7 @@ import DashboardHeader from '../components/dashboard/DashboardHeader'
 import { DocumentGridCard, DocumentListRow } from '../components/dashboard/DocumentCard'
 import NewDocumentStrip from '../components/dashboard/NewDocumentStrip'
 import ShareModal from '../components/ShareModal'
+import LoadingSpinner from '../components/ui/LoadingSpinner'
 import { useAuth } from '../context/AuthContext'
 import { documentService } from '../services/documentService'
 import { importFileAsDocument } from '../utils/importDocument'
@@ -328,7 +329,7 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-24">
-            <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#4285f4] border-t-transparent" />
+            <LoadingSpinner />
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">

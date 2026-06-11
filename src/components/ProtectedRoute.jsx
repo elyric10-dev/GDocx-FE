@@ -1,12 +1,13 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import AppShell from './AppShell'
+import LoadingSpinner from './ui/LoadingSpinner'
 import { useAuth } from '../context/AuthContext'
 
 function LoadingScreen() {
   return (
     <AppShell>
       <div className="flex min-h-screen items-center justify-center">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#4285f4] border-t-transparent" />
+        <LoadingSpinner />
       </div>
     </AppShell>
   )

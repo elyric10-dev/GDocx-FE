@@ -1,0 +1,216 @@
+/* Backgrounds */
+.gdocx-bg-app {
+  background: linear-gradient(
+    155deg,
+    #eef4fd 0%,
+    #f5f7fa 30%,
+    #faf8f3 55%,
+    #f0f4f8 100%
+  );
+}
+
+.gdocx-bg-panel {
+  background: linear-gradient(
+    145deg,
+    #eef4fd 0%,
+    #f5f7fa 35%,
+    #faf6ee 70%,
+    #f0f4f8 100%
+  );
+}
+
+.gdocx-bg-dark {
+  background-color: var(--gdocx-dark);
+}
+
+.gdocx-mesh-soft {
+  background:
+    radial-gradient(ellipse 70% 55% at 5% 20%, rgba(66, 133, 244, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 95% 60%, rgba(52, 168, 83, 0.1), transparent 55%),
+    radial-gradient(ellipse 45% 35% at 70% 5%, rgba(251, 188, 4, 0.07), transparent 50%),
+    radial-gradient(ellipse 40% 30% at 15% 85%, rgba(234, 67, 53, 0.06), transparent 50%);
+}
+
+.gdocx-mesh-bold {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, rgba(66, 133, 244, 0.35), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 80% 70%, rgba(52, 168, 83, 0.28), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 60% 10%, rgba(251, 188, 4, 0.18), transparent 50%),
+    radial-gradient(ellipse 40% 35% at 10% 80%, rgba(234, 67, 53, 0.15), transparent 50%);
+}
+
+/* Decorative */
+.gdocx-orb {
+  animation: gdocx-orb-drift 18s ease-in-out infinite;
+}
+
+.gdocx-orb--delay-1 {
+  animation-delay: -4s;
+  animation-duration: 20s;
+}
+
+.gdocx-orb--delay-2 {
+  animation-delay: -8s;
+  animation-duration: 16s;
+}
+
+.gdocx-orb--delay-3 {
+  animation-delay: -2s;
+  animation-duration: 22s;
+}
+
+.gdocx-float-doc {
+  animation: gdocx-doc-float 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.gdocx-float-doc--dark {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.gdocx-float-doc--light {
+  border: 1px solid rgba(66, 133, 244, 0.1);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
+  backdrop-filter: blur(4px);
+}
+
+.gdocx-brand-stripe {
+  display: flex;
+  height: 0.25rem;
+}
+
+.gdocx-brand-stripe > * {
+  flex: 1;
+}
+
+.gdocx-brand-stripe--thin {
+  height: 1px;
+}
+
+.gdocx-brand-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gdocx-brand-dots span {
+  height: 0.25rem;
+  width: 2rem;
+  border-radius: 9999px;
+}
+
+.gdocx-brand-dots--thick span {
+  height: 0.25rem;
+  width: 2.5rem;
+}
+
+.gdocx-brand-dots--bottom span {
+  height: 2px;
+  width: 2.5rem;
+}
+
+/* Surfaces */
+.gdocx-glass-card {
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: var(--gdocx-shadow-glass);
+  backdrop-filter: blur(24px);
+}
+
+.gdocx-glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: var(--gdocx-shadow-panel);
+  backdrop-filter: blur(24px);
+}
+
+.gdocx-gradient-brand {
+  background: var(--gdocx-gradient-brand);
+}
+
+.gdocx-gradient-primary {
+  background: var(--gdocx-gradient-primary);
+}
+
+.gdocx-gradient-heading {
+  background: var(--gdocx-gradient-heading);
+  background-clip: text;
+  color: transparent;
+}
+
+.gdocx-gradient-ring {
+  background: var(--gdocx-gradient-brand);
+}
+
+/* Form controls */
+.gdocx-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--gdocx-border) 80%, transparent);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--gdocx-text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.gdocx-input::placeholder {
+  color: var(--gdocx-text-muted);
+}
+
+.gdocx-input:focus {
+  border-color: var(--gdocx-blue);
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.25);
+}
+
+.gdocx-input--with-icon {
+  padding-left: 2.5rem;
+}
+
+.gdocx-btn-primary {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 0.75rem;
+  background: var(--gdocx-gradient-primary);
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 10px 15px -3px rgba(26, 115, 232, 0.3);
+  transition: box-shadow 0.2s, filter 0.2s;
+}
+
+.gdocx-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 20px 25px -5px rgba(26, 115, 232, 0.35);
+  filter: brightness(1.05);
+}
+
+.gdocx-btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Motion */
+.gdocx-enter-fade-up {
+  animation: gdocx-enter-fade-up 0.65s ease backwards;
+}
+
+.gdocx-enter-menu {
+  animation: gdocx-enter-menu 0.22s ease backwards;
+  transform-origin: top right;
+}
+
+.dashboard-card-enter {
+  animation: dashboard-card-enter 0.45s ease backwards;
+}
+
+.editor-canvas-enter {
+  animation: editor-canvas-enter 0.5s ease backwards;
+}

@@ -5,6 +5,7 @@ import EditorHeader from '../components/EditorHeader'
 import EditorToolbar from '../components/EditorToolbar'
 import ImageWrapToolbar from '../components/ImageWrapToolbar'
 import ShareModal from '../components/ShareModal'
+import LoadingSpinner from '../components/ui/LoadingSpinner'
 import { useAuth } from '../context/AuthContext'
 import { documentService } from '../services/documentService'
 import { downloadDocument } from '../utils/downloadDocument'
@@ -125,7 +126,7 @@ export default function EditorPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#4285f4] border-t-transparent" />
+          <LoadingSpinner size="lg" />
           <p className="text-sm text-[#5f6368]">Opening document…</p>
         </div>
       </div>

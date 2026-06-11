@@ -1,0 +1,38 @@
+:root {
+  --gdocx-blue: #4285f4;
+  --gdocx-green: #34a853;
+  --gdocx-yellow: #fbbc04;
+  --gdocx-red: #ea4335;
+  --gdocx-blue-dark: #1a73e8;
+  --gdocx-blue-hover: #1557b0;
+  --gdocx-text: #202124;
+  --gdocx-text-secondary: #5f6368;
+  --gdocx-text-muted: #80868b;
+  --gdocx-border: #dadce0;
+  --gdocx-surface: #f8f9fa;
+  --gdocx-dark: #0f172a;
+
+  --gdocx-gradient-brand: linear-gradient(
+    to bottom right,
+    var(--gdocx-blue),
+    var(--gdocx-green),
+    var(--gdocx-yellow)
+  );
+  --gdocx-gradient-primary: linear-gradient(
+    to right,
+    var(--gdocx-blue-dark),
+    var(--gdocx-blue)
+  );
+  --gdocx-gradient-heading: linear-gradient(
+    to bottom right,
+    var(--gdocx-text),
+    #3c4043,
+    var(--gdocx-blue-dark)
+  );
+
+  --gdocx-shadow-glass:
+    0 4px 24px rgba(66, 133, 244, 0.08),
+    0 1px 3px rgba(60, 64, 67, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --gdocx-shadow-panel: 0 25px 50px -12px rgba(66, 133, 244, 0.15);
+}

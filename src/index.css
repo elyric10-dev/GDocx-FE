@@ -10,7 +10,71 @@ body {
 }
 
 .dashboard-bg {
-  background-color: #f8f9fa;
+  background-color: transparent;
+}
+
+/* App shell background (dashboard + editor) */
+.app-bg-base {
+  background:
+    linear-gradient(155deg, #eef4fd 0%, #f5f7fa 30%, #faf8f3 55%, #f0f4f8 100%);
+}
+
+.app-bg-mesh {
+  background:
+    radial-gradient(ellipse 70% 55% at 5% 20%, rgba(66, 133, 244, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 95% 60%, rgba(52, 168, 83, 0.1), transparent 55%),
+    radial-gradient(ellipse 45% 35% at 70% 5%, rgba(251, 188, 4, 0.07), transparent 50%),
+    radial-gradient(ellipse 40% 30% at 15% 85%, rgba(234, 67, 53, 0.06), transparent 50%);
+}
+
+.app-bg-orb {
+  animation: login-orb-drift 20s ease-in-out infinite;
+}
+
+.app-bg-orb-2 {
+  animation-delay: -6s;
+  animation-duration: 24s;
+}
+
+.app-bg-orb-3 {
+  animation-delay: -11s;
+  animation-duration: 18s;
+}
+
+.app-bg-orb-4 {
+  animation-delay: -3s;
+  animation-duration: 22s;
+}
+
+.app-float-doc {
+  animation: app-doc-float 12s ease-in-out infinite;
+}
+
+.app-float-1 {
+  --app-rotate: -6deg;
+  animation-delay: 0s;
+}
+
+.app-float-2 {
+  --app-rotate: 5deg;
+  animation-delay: -4s;
+  animation-duration: 14s;
+}
+
+.app-float-3 {
+  --app-rotate: -4deg;
+  animation-delay: -8s;
+  animation-duration: 16s;
+}
+
+@keyframes app-doc-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--app-rotate, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(calc(var(--app-rotate, 0deg) + 1.5deg));
+  }
 }
 
 /* Login page */
@@ -148,6 +212,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .login-orb,
   .login-panel-orb,
+  .app-bg-orb,
+  .app-float-doc,
   .login-float-doc,
   .login-form-enter {
     animation: none;

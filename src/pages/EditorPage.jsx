@@ -123,7 +123,7 @@ export default function EditorPage() {
 
   if (loading) {
     return (
-      <div className="dashboard-bg flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#4285f4] border-t-transparent" />
           <p className="text-sm text-[#5f6368]">Opening document…</p>
@@ -134,7 +134,7 @@ export default function EditorPage() {
 
   if (error && !contentJson) {
     return (
-      <div className="dashboard-bg flex min-h-screen items-center justify-center p-8">
+      <div className="flex min-h-screen items-center justify-center p-8">
         <div className="max-w-md rounded-2xl border border-red-200 bg-white px-6 py-5 text-center shadow-sm">
           <p className="text-sm text-red-700">{error}</p>
         </div>
@@ -143,7 +143,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="dashboard-bg flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <EditorHeader
         title={title}
         onTitleChange={handleTitleChange}

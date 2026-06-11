@@ -1,11 +1,14 @@
 import { Navigate, useLocation } from 'react-router-dom'
+import AppShell from './AppShell'
 import { useAuth } from '../context/AuthContext'
 
 function LoadingScreen() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
-    </div>
+    <AppShell>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#4285f4] border-t-transparent" />
+      </div>
+    </AppShell>
   )
 }
 
@@ -21,5 +24,5 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace state={{ from: location }} />
   }
 
-  return children
+  return <AppShell>{children}</AppShell>
 }

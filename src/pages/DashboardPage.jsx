@@ -218,7 +218,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="dashboard-bg min-h-screen">
+    <div className="min-h-screen">
       <DashboardHeader search={search} onSearchChange={setSearch} />
 
       <NewDocumentStrip

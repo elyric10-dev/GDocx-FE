@@ -61,7 +61,9 @@ export default function LoginPage() {
 
   return (
     <div className="login-page grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
-      <LoginBackground />
+      <div className="relative min-h-[38vh] lg:min-h-screen">
+        <LoginBackground />
+      </div>
 
       <DecorativeBackground
         variant="panel"
@@ -127,9 +129,14 @@ export default function LoginPage() {
             </form>
           </GlassCard>
 
-          <div className="mt-8 grid grid-cols-3 gap-3">
+          <div
+            className="mt-8 flex items-center justify-center gap-6 sm:gap-10"
+            aria-label="Included features"
+          >
             <FeatureChip label="Autosave" color="blue" />
+            <span className="h-8 w-px shrink-0 bg-[var(--gdocx-border)]/50" aria-hidden />
             <FeatureChip label="Sharing" color="green" />
+            <span className="h-8 w-px shrink-0 bg-[var(--gdocx-border)]/50" aria-hidden />
             <FeatureChip label="Rich text" color="yellow" />
           </div>
 

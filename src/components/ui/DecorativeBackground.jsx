@@ -29,17 +29,17 @@ const DOC_PRESETS = {
     { title: 'Ideas', variant: 'light', className: 'bottom-[32%] right-[12%] hidden w-20 opacity-40 xl:block', lines: 3, rotate: '-4deg' },
   ],
   hero: [
-    { title: 'Project brief', variant: 'dark', className: 'left-[8%] top-[18%] w-36 lg:w-44', lines: 5, rotate: '-8deg' },
-    { title: 'Meeting notes', variant: 'dark', className: 'right-[6%] top-[12%] w-32 lg:right-[12%] lg:w-40', lines: 4, rotate: '6deg' },
-    { title: 'Draft v2', variant: 'dark', className: 'bottom-[22%] left-[18%] hidden w-36 sm:block lg:bottom-[28%] lg:w-44', lines: 3, rotate: '4deg' },
-    { title: 'Ideas', variant: 'dark', className: 'bottom-[18%] right-[10%] w-28 lg:w-36', lines: 4, rotate: '-5deg' },
+    { title: 'Project brief', variant: 'dark', className: 'left-[6%] top-[58%] hidden w-32 opacity-80 sm:block lg:top-[56%] lg:w-40', lines: 5, rotate: '-8deg' },
+    { title: 'Meeting notes', variant: 'dark', className: 'right-[6%] top-[10%] w-32 opacity-75 lg:right-[10%] lg:w-36', lines: 4, rotate: '6deg' },
+    { title: 'Draft v2', variant: 'dark', className: 'bottom-[20%] left-[14%] hidden w-32 opacity-75 md:block lg:bottom-[24%] lg:w-40', lines: 3, rotate: '4deg' },
+    { title: 'Ideas', variant: 'dark', className: 'bottom-[16%] right-[8%] w-28 opacity-75 lg:w-32', lines: 4, rotate: '-5deg' },
   ],
 }
 
 function DotPattern({ size = 32, opacity = 0.35, light = false }) {
   return (
     <div
-      className="absolute inset-0"
+      className="absolute inset-0 z-[1]"
       style={{
         opacity,
         backgroundImage: light
@@ -67,14 +67,14 @@ export default function DecorativeBackground({
   const meshClass = isHero ? 'gdocx-mesh-bold opacity-90' : 'gdocx-mesh-soft'
 
   return (
-    <div className={cn('h-full min-h-full overflow-hidden', className)}>
-      <div className={cn('absolute inset-0', baseClass)} />
-      <div className={cn('absolute inset-0', meshClass)} />
+    <div className={cn('relative isolate h-full min-h-full w-full overflow-hidden', className)}>
+      <div className={cn('absolute inset-0 z-0', baseClass)} aria-hidden />
+      <div className={cn('absolute inset-0 z-0', meshClass)} aria-hidden />
 
       {ORB_PRESETS[variant]?.map((orb) => (
         <div
           key={orb.className}
-          className={cn('absolute rounded-full blur-3xl', orb.className)}
+          className={cn('absolute z-[1] rounded-full blur-3xl', orb.className)}
           aria-hidden
         />
       ))}
@@ -88,7 +88,7 @@ export default function DecorativeBackground({
             title={doc.title}
             lines={doc.lines}
             variant={doc.variant}
-            className={doc.className}
+            className={cn('z-[2]', doc.className)}
             style={{ '--gdocx-float-rotate': doc.rotate }}
           />
         ))}

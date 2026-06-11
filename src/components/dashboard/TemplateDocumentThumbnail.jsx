@@ -88,6 +88,12 @@ export function ImportUploadThumbnail() {
       <div className="gdocx-import-upload__orbit gdocx-import-upload__orbit--c">
         <span className="gdocx-import-upload__file-chip gdocx-import-upload__file-chip--yellow">.docx</span>
       </div>
+      <div className="gdocx-import-upload__orbit gdocx-import-upload__orbit--d">
+        <span className="gdocx-import-upload__file-chip gdocx-import-upload__file-chip--purple">.json</span>
+      </div>
+      <div className="gdocx-import-upload__orbit gdocx-import-upload__orbit--e">
+        <span className="gdocx-import-upload__file-chip gdocx-import-upload__file-chip--red">.html</span>
+      </div>
 
       <div className="gdocx-import-upload__zone">
         <div className="gdocx-import-upload__ring" />

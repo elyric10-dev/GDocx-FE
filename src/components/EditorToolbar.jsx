@@ -40,9 +40,9 @@ function FileMenu({ onDownload }) {
   }, [])
 
   const items = [
-    { label: 'HTML', format: 'html' },
-    { label: 'Plain text', format: 'txt' },
-    { label: 'JSON', format: 'json' },
+    { label: 'Export as HTML', format: 'html' },
+    { label: 'Export as plain text', format: 'txt' },
+    { label: 'Export as JSON', format: 'json' },
   ]
 
   return (
@@ -61,18 +61,18 @@ function FileMenu({ onDownload }) {
         </svg>
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-xl border border-[#dadce0] bg-white py-1 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-1 min-w-[11.75rem] rounded-xl border border-[#dadce0] bg-white py-1 shadow-lg">
           {items.map((item) => (
             <button
               key={item.format}
               type="button"
-              className="block w-full px-4 py-2 text-left text-sm text-[#202124] hover:bg-[#f1f3f4]"
+              className="block w-full whitespace-nowrap px-4 py-2 text-left text-sm text-[#202124] hover:bg-[#f1f3f4]"
               onClick={() => {
                 onDownload(item.format)
                 setOpen(false)
               }}
             >
-              Download {item.label}
+              {item.label}
             </button>
           ))}
         </div>

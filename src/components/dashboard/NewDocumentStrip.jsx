@@ -1,4 +1,5 @@
 import { cn } from '../../utils/cn'
+import { IMPORT_FORMATS_LABEL } from '../../utils/importDocument'
 import { DOCUMENT_TEMPLATES } from '../../utils/documentTemplates'
 import TemplateDocumentThumbnail, {
   BlankDocumentThumbnail,
@@ -15,7 +16,7 @@ const STARTER_TEMPLATES = [
   {
     id: 'import',
     label: 'Import file',
-    subtitle: '.txt · .md · .docx',
+    subtitle: IMPORT_FORMATS_LABEL,
     type: 'import',
   },
   ...DOCUMENT_TEMPLATES,
@@ -73,7 +74,7 @@ function ImportCard({ disabled, onClick }) {
   return (
     <NewDocCard
       label="Import file"
-      subtitle=".txt · .md · .docx"
+      subtitle={IMPORT_FORMATS_LABEL}
       disabled={disabled}
       onClick={onClick}
       sceneClass="gdocx-new-doc-card__scene--import"

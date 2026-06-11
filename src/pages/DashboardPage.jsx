@@ -240,7 +240,7 @@ export default function DashboardPage() {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".txt,.md,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        accept=".txt,.md,.docx,.json,.html,.htm,text/plain,text/markdown,text/html,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         onChange={handleFileChange}
         className="hidden"
       />

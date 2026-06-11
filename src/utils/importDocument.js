@@ -1,9 +1,11 @@
 import { generateJSON } from '@tiptap/html'
 import { marked } from 'marked'
 import mammoth from 'mammoth'
-import { editorExtensions } from './editorExtensions'
+import { editorExtensions, migrateImageNodes } from './editorExtensions'
 
-const SUPPORTED_EXTENSIONS = ['txt', 'md', 'docx']
+export const IMPORT_FORMATS_LABEL = '.txt · .md · .docx · .json · .html'
+
+const SUPPORTED_EXTENSIONS = ['txt', 'md', 'docx', 'json', 'html', 'htm']
 
 const EMPTY_DOC = {
   type: 'doc',
@@ -78,6 +80,42 @@ async function parseDocxFile(file) {
   return htmlToTipTapJson(result.value)
 }
 
+function extractHtmlBody(html) {
+  const trimmed = html.trim()
+  if (!trimmed) return ''
+
+  if (/<html[\s>]/i.test(trimmed) || /<body[\s>]/i.test(trimmed)) {
+    const doc = new DOMParser().parseFromString(trimmed, 'text/html')
+    return doc.body?.innerHTML?.trim() || ''
+  }
+
+  return trimmed
+}
+
+async function parseHtmlFile(file) {
+  const text = await file.text()
+  const bodyHtml = extractHtmlBody(text)
+  if (!bodyHtml) return EMPTY_DOC
+  return htmlToTipTapJson(bodyHtml)
+}
+
+async function parseJsonFile(file) {
+  const text = await file.text()
+  let parsed
+
+  try {
+    parsed = JSON.parse(text)
+  } catch {
+    throw new Error('Invalid JSON file. Please upload a valid exported document.')
+  }
+
+  if (!parsed || typeof parsed !== 'object' || parsed.type !== 'doc') {
+    throw new Error('Invalid document JSON. Expected a TipTap document with type "doc".')
+  }
+
+  return migrateImageNodes(parsed)
+}
+
 function getExtension(filename) {
   const parts = filename.toLowerCase().split('.')
   return parts.length > 1 ? parts.pop() : ''
@@ -89,7 +127,7 @@ export function isSupportedImportFile(file) {
 
 export async function importFileAsDocument(file) {
   if (!isSupportedImportFile(file)) {
-    throw new Error('Unsupported file type. Please upload a .txt, .md, or .docx file.')
+    throw new Error('Unsupported file type. Please upload a .txt, .md, .docx, .json, or .html file.')
   }
 
   const extension = getExtension(file.name)
@@ -99,6 +137,10 @@ export async function importFileAsDocument(file) {
     contentJson = await parseTextFile(file)
   } else if (extension === 'md') {
     contentJson = await parseMarkdownFile(file)
+  } else if (extension === 'json') {
+    contentJson = await parseJsonFile(file)
+  } else if (extension === 'html' || extension === 'htm') {
+    contentJson = await parseHtmlFile(file)
   } else {
     contentJson = await parseDocxFile(file)
   }

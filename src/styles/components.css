@@ -728,6 +728,19 @@
   animation-duration: 10s;
 }
 
+.gdocx-import-upload__orbit--d {
+  bottom: 14%;
+  right: 14%;
+  animation-duration: 8.5s;
+  animation-direction: reverse;
+}
+
+.gdocx-import-upload__orbit--e {
+  top: 42%;
+  right: 6%;
+  animation-duration: 9.5s;
+}
+
 .gdocx-import-upload__file-chip {
   display: inline-block;
   border-radius: 4px;
@@ -751,12 +764,30 @@
   border-color: #feefc3;
 }
 
+.gdocx-import-upload__file-chip--purple {
+  color: #7627bb;
+  border-color: #e9d5ff;
+}
+
+.gdocx-import-upload__file-chip--red {
+  color: #c5221f;
+  border-color: #fce8e6;
+}
+
 .gdocx-import-upload__orbit--b .gdocx-import-upload__file-chip {
   animation-delay: -1s;
 }
 
 .gdocx-import-upload__orbit--c .gdocx-import-upload__file-chip {
   animation-delay: -2s;
+}
+
+.gdocx-import-upload__orbit--d .gdocx-import-upload__file-chip {
+  animation-delay: -1.5s;
+}
+
+.gdocx-import-upload__orbit--e .gdocx-import-upload__file-chip {
+  animation-delay: -0.75s;
 }
 
 @keyframes gdocx-import-pulse {

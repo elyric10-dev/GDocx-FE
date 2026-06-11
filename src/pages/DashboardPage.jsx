@@ -1,166 +1,39 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import AppHeader from '../components/AppHeader'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ConfirmDialog from '../components/ConfirmDialog'
+import DashboardHeader from '../components/dashboard/DashboardHeader'
+import { DocumentGridCard, DocumentListRow } from '../components/dashboard/DocumentCard'
+import NewDocumentStrip from '../components/dashboard/NewDocumentStrip'
 import ShareModal from '../components/ShareModal'
 import { useAuth } from '../context/AuthContext'
 import { documentService } from '../services/documentService'
 import { importFileAsDocument } from '../utils/importDocument'
 
-function formatDate(value) {
-  return new Date(value).toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-}
+const FILTER_OPTIONS = [
+  { value: 'all', label: 'All documents' },
+  { value: 'owned', label: 'Owned by me' },
+  { value: 'shared', label: 'Shared with me' },
+]
 
-function DocumentIcon({ variant }) {
-  if (variant === 'shared') {
-    return (
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-          />
-        </svg>
-      </div>
-    )
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Last opened' },
+  { value: 'name', label: 'Name' },
+]
+
+function sortDocuments(documents, sortBy) {
+  const sorted = [...documents]
+  if (sortBy === 'name') {
+    sorted.sort((a, b) => a.title.localeCompare(b.title))
+  } else {
+    sorted.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
   }
-
-  return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700">
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-        />
-      </svg>
-    </div>
-  )
+  return sorted
 }
 
-function SharedCountBadge({ count }) {
-  if (!count) return null
-
-  const label = count === 1 ? 'Shared with 1 person' : `Shared with ${count} people`
-
-  return (
-    <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200 ring-inset">
-      {label}
-    </span>
-  )
-}
-
-function DocumentList({ documents, emptyMessage, onShare, onDelete, deletingId, variant = 'owned' }) {
-  const isShared = variant === 'shared'
-  const rowAccent = isShared
-    ? 'border-l-violet-500 hover:bg-violet-50/60'
-    : 'border-l-indigo-500 hover:bg-indigo-50/40'
-
-  if (documents.length === 0) {
-    return (
-      <div className="px-6 py-12 text-center">
-        <p className="text-slate-600">{emptyMessage}</p>
-      </div>
-    )
-  }
-
-  return (
-    <ul className="divide-y divide-slate-200">
-      {documents.map((document) => (
-        <li
-          key={document.id}
-          className={`flex items-center justify-between gap-4 border-l-4 px-6 py-4 transition ${rowAccent}`}
-        >
-          <Link to={`/documents/${document.id}`} className="flex min-w-0 flex-1 items-start gap-3 transition hover:opacity-80">
-            <DocumentIcon variant={variant} />
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="font-medium text-slate-900">{document.title}</p>
-                {!isShared && <SharedCountBadge count={document.share_count} />}
-              </div>
-              <p className="mt-1 text-sm text-slate-500">
-                {isShared && document.owner_email ? (
-                  <>
-                    <span className="font-medium text-violet-700">Owner: {document.owner_email}</span>
-                    <span className="mx-1.5 text-slate-300">·</span>
-                  </>
-                ) : null}
-                Updated {formatDate(document.updated_at)}
-              </p>
-            </div>
-          </Link>
-          <div className="flex shrink-0 items-center gap-2">
-            {onShare && (
-              <button
-                type="button"
-                onClick={() => onShare(document)}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-white"
-              >
-                Share
-              </button>
-            )}
-            {onDelete && (
-              <button
-                type="button"
-                onClick={() => onDelete(document)}
-                disabled={deletingId === document.id}
-                className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {deletingId === document.id ? 'Deleting…' : 'Delete'}
-              </button>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-function DocumentSection({ title, description, variant, count, loading, children }) {
-  const isShared = variant === 'shared'
-
-  return (
-    <section
-      className={`overflow-hidden rounded-2xl border shadow-sm ${
-        isShared
-          ? 'border-violet-200 bg-gradient-to-b from-violet-50/80 to-white'
-          : 'border-indigo-200 bg-gradient-to-b from-indigo-50/60 to-white'
-      }`}
-    >
-      <div
-        className={`border-b px-6 py-4 ${
-          isShared ? 'border-violet-200 bg-violet-100/50' : 'border-indigo-200 bg-indigo-100/40'
-        }`}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h3
-              className={`text-sm font-semibold uppercase tracking-wide ${
-                isShared ? 'text-violet-800' : 'text-indigo-800'
-              }`}
-            >
-              {title}
-            </h3>
-            <p className="mt-0.5 text-sm text-slate-600">{description}</p>
-          </div>
-          {!loading && (
-            <span
-              className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                isShared ? 'bg-violet-200 text-violet-900' : 'bg-indigo-200 text-indigo-900'
-              }`}
-            >
-              {count}
-            </span>
-          )}
-        </div>
-      </div>
-      {children}
-    </section>
-  )
+function filterBySearch(documents, query) {
+  const normalized = query.trim().toLowerCase()
+  if (!normalized) return documents
+  return documents.filter((doc) => doc.title.toLowerCase().includes(normalized))
 }
 
 export default function DashboardPage() {
@@ -170,11 +43,14 @@ export default function DashboardPage() {
   const [sharedDocuments, setSharedDocuments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [creating, setCreating] = useState(false)
-  const [uploading, setUploading] = useState(false)
+  const [busy, setBusy] = useState(false)
   const [shareDocument, setShareDocument] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [documentToDelete, setDocumentToDelete] = useState(null)
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('recent')
+  const [viewMode, setViewMode] = useState('grid')
   const fileInputRef = useRef(null)
 
   const loadDocuments = useCallback(async () => {
@@ -204,9 +80,7 @@ export default function DashboardPage() {
       setOwnedDocuments(result.owned)
       setSharedDocuments(result.shared)
     } catch (err) {
-      if (err.response?.status === 401) {
-        return
-      }
+      if (err.response?.status === 401) return
       const message =
         err.response?.data?.detail || err.message || 'Failed to load documents'
       setError(typeof message === 'string' ? message : 'Failed to load documents')
@@ -220,22 +94,41 @@ export default function DashboardPage() {
     loadDocuments()
   }, [user?.id, loadDocuments])
 
-  async function handleCreateDocument() {
-    setCreating(true)
+  const displayedDocuments = useMemo(() => {
+    let docs = []
+
+    if (filter === 'owned') {
+      docs = ownedDocuments.map((doc) => ({ ...doc, _variant: 'owned' }))
+    } else if (filter === 'shared') {
+      docs = sharedDocuments.map((doc) => ({ ...doc, _variant: 'shared' }))
+    } else {
+      docs = [
+        ...ownedDocuments.map((doc) => ({ ...doc, _variant: 'owned' })),
+        ...sharedDocuments.map((doc) => ({ ...doc, _variant: 'shared' })),
+      ]
+    }
+
+    docs = filterBySearch(docs, search)
+    docs = sortDocuments(docs, sortBy)
+    return docs
+  }, [ownedDocuments, sharedDocuments, filter, search, sortBy])
+
+  async function handleCreateDocument(title = 'Untitled', contentJson) {
+    setBusy(true)
     setError('')
     try {
-      const document = await documentService.create()
+      const document = await documentService.create(title, contentJson)
       navigate(`/documents/${document.id}`)
     } catch (err) {
       const message =
         err.response?.data?.detail || err.message || 'Failed to create document'
       setError(typeof message === 'string' ? message : 'Failed to create document')
     } finally {
-      setCreating(false)
+      setBusy(false)
     }
   }
 
-  function handleUploadClick() {
+  function handleImportClick() {
     fileInputRef.current?.click()
   }
 
@@ -244,7 +137,7 @@ export default function DashboardPage() {
     event.target.value = ''
     if (!file) return
 
-    setUploading(true)
+    setBusy(true)
     setError('')
 
     try {
@@ -256,16 +149,12 @@ export default function DashboardPage() {
         err.response?.data?.detail || err.message || 'Failed to import document'
       setError(typeof message === 'string' ? message : 'Failed to import document')
     } finally {
-      setUploading(false)
+      setBusy(false)
     }
   }
 
-  function handleShared() {
-    loadDocuments()
-  }
-
-  function handleDeleteDocument(document) {
-    setDocumentToDelete(document)
+  async function handleTemplate(template) {
+    await handleCreateDocument(template.title, template.contentJson)
   }
 
   async function confirmDeleteDocument() {
@@ -289,90 +178,135 @@ export default function DashboardPage() {
     }
   }
 
-  function renderListContent(documents, emptyMessage, variant, onShare, onDelete) {
-    if (loading) {
+  function renderEmptyState() {
+    if (search.trim()) {
       return (
-        <div className="flex items-center justify-center px-6 py-16">
-          <div
-            className={`h-8 w-8 animate-spin rounded-full border-4 border-t-transparent ${
-              variant === 'shared' ? 'border-violet-600' : 'border-indigo-600'
-            }`}
-          />
+        <div className="col-span-full py-20 text-center">
+          <p className="text-[#5f6368]">No documents match &ldquo;{search}&rdquo;</p>
         </div>
       )
     }
 
-    if (variant === 'owned' && documents.length === 0) {
+    if (filter === 'shared') {
       return (
-        <div className="px-6 py-16 text-center">
-          <p className="text-slate-600">No documents yet.</p>
-          <button
-            type="button"
-            onClick={handleCreateDocument}
-            disabled={creating}
-            className="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-700"
-          >
-            Create your first document
-          </button>
+        <div className="col-span-full py-20 text-center">
+          <p className="text-[#5f6368]">Nothing shared with you yet.</p>
         </div>
       )
     }
 
     return (
-      <DocumentList
-        documents={documents}
-        emptyMessage={emptyMessage}
-        onShare={onShare}
-        onDelete={onDelete}
-        deletingId={deletingId}
-        variant={variant}
-      />
+      <div className="col-span-full py-20 text-center">
+        <p className="text-[#5f6368]">Your canvas is empty — start something new above.</p>
+        <button
+          type="button"
+          onClick={() => handleCreateDocument()}
+          disabled={busy}
+          className="mt-4 text-sm font-medium text-[#1a73e8] hover:underline disabled:opacity-60"
+        >
+          Create a blank document
+        </button>
+      </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AppHeader>
-        <Link to="/" className="text-lg font-semibold text-slate-900">
-          GDocx
-        </Link>
-      </AppHeader>
+    <div className="dashboard-bg min-h-screen">
+      <DashboardHeader search={search} onSearchChange={setSearch} />
 
-      <main className="mx-auto max-w-5xl px-6 py-12">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">Your documents</h2>
-            <p className="mt-1 text-sm text-slate-600">Create, edit, and share your documents.</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".txt,.md,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              onChange={handleFileChange}
-              className="hidden"
-            />
+      <NewDocumentStrip
+        busy={busy}
+        onBlank={() => handleCreateDocument()}
+        onImport={handleImportClick}
+        onTemplate={handleTemplate}
+      />
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".txt,.md,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-8">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+          <h2 className="text-base font-normal text-[#202124]">Recent documents</h2>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="rounded-lg border border-[#dadce0] bg-white px-3 py-1.5 text-sm text-[#202124] outline-none focus:border-[#4285f4] focus:ring-2 focus:ring-[#4285f4]/20"
+            >
+              {FILTER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            <div className="flex rounded-lg border border-[#dadce0] bg-white p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`rounded-md p-1.5 transition ${
+                  viewMode === 'grid'
+                    ? 'bg-[#e8f0fe] text-[#1a73e8]'
+                    : 'text-[#5f6368] hover:bg-[#f1f3f4]'
+                }`}
+                aria-label="Grid view"
+              >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={`rounded-md p-1.5 transition ${
+                  viewMode === 'list'
+                    ? 'bg-[#e8f0fe] text-[#1a73e8]'
+                    : 'text-[#5f6368] hover:bg-[#f1f3f4]'
+                }`}
+                aria-label="List view"
+              >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+                </svg>
+              </button>
+            </div>
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="rounded-lg border border-[#dadce0] bg-white px-3 py-1.5 text-sm text-[#202124] outline-none focus:border-[#4285f4] focus:ring-2 focus:ring-[#4285f4]/20"
+              aria-label="Sort documents"
+            >
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
             <button
               type="button"
-              onClick={handleUploadClick}
-              disabled={uploading || creating}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={handleImportClick}
+              disabled={busy}
+              className="rounded-lg border border-[#dadce0] bg-white p-1.5 text-[#5f6368] transition hover:bg-[#f1f3f4] disabled:opacity-60"
+              aria-label="Import file"
+              title="Import file"
             >
-              {uploading ? 'Importing…' : 'Upload file'}
-            </button>
-            <button
-              type="button"
-              onClick={handleCreateDocument}
-              disabled={creating || uploading}
-              className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {creating ? 'Creating…' : 'New document'}
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8h-4V4h-4zm-1 8v4h2v-4h2l-3-3-3 3h2zm4-6V4.5L18.5 8H14z" />
+              </svg>
             </button>
           </div>
         </div>
 
         {error && (
-          <div className="mb-6 flex items-start justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mb-6 flex items-start justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             <span>{error}</span>
             <button
               type="button"
@@ -385,44 +319,57 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="space-y-8">
-          <DocumentSection
-            title="Owned documents"
-            description="Documents you created and can share with others."
-            variant="owned"
-            count={ownedDocuments.length}
-            loading={loading}
-          >
-            {renderListContent(
-              ownedDocuments,
-              'No documents yet.',
-              'owned',
-              setShareDocument,
-              handleDeleteDocument,
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#4285f4] border-t-transparent" />
+          </div>
+        ) : viewMode === 'grid' ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {displayedDocuments.length === 0
+              ? renderEmptyState()
+              : displayedDocuments.map((document, index) => (
+                  <DocumentGridCard
+                    key={`${document._variant}-${document.id}`}
+                    document={document}
+                    variant={document._variant}
+                    onShare={document._variant === 'owned' ? setShareDocument : undefined}
+                    onDelete={document._variant === 'owned' ? setDocumentToDelete : undefined}
+                    deletingId={deletingId}
+                    style={{ animationDelay: `${index * 40}ms` }}
+                  />
+                ))}
+          </div>
+        ) : (
+          <ul className="overflow-visible rounded-xl border border-[#dadce0] bg-white">
+            {displayedDocuments.length === 0 ? (
+              <li className="py-20 text-center text-[#5f6368]">
+                {search.trim()
+                  ? `No documents match "${search}"`
+                  : filter === 'shared'
+                    ? 'Nothing shared with you yet.'
+                    : 'Your canvas is empty — start something new above.'}
+              </li>
+            ) : (
+              displayedDocuments.map((document) => (
+                <DocumentListRow
+                  key={`${document._variant}-${document.id}`}
+                  document={document}
+                  variant={document._variant}
+                  onShare={document._variant === 'owned' ? setShareDocument : undefined}
+                  onDelete={document._variant === 'owned' ? setDocumentToDelete : undefined}
+                  deletingId={deletingId}
+                />
+              ))
             )}
-          </DocumentSection>
-
-          <DocumentSection
-            title="Shared with me"
-            description="Documents others have shared with you."
-            variant="shared"
-            count={sharedDocuments.length}
-            loading={loading}
-          >
-            {renderListContent(
-              sharedDocuments,
-              'No documents have been shared with you yet.',
-              'shared',
-            )}
-          </DocumentSection>
-        </div>
+          </ul>
+        )}
       </main>
 
       {shareDocument && (
         <ShareModal
           document={shareDocument}
           onClose={() => setShareDocument(null)}
-          onShared={handleShared}
+          onShared={loadDocuments}
         />
       )}
 

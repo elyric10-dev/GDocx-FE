@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import DocumentEditor from '../components/DocumentEditor'
 import EditorHeader from '../components/EditorHeader'
-import EditorMenuBar from '../components/EditorMenuBar'
 import EditorToolbar from '../components/EditorToolbar'
 import ShareModal from '../components/ShareModal'
 import { useAuth } from '../context/AuthContext'
@@ -123,24 +122,27 @@ export default function EditorPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f8f9fa]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1a73e8] border-t-transparent" />
+      <div className="dashboard-bg flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#4285f4] border-t-transparent" />
+          <p className="text-sm text-[#5f6368]">Opening document…</p>
+        </div>
       </div>
     )
   }
 
   if (error && !contentJson) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] p-8">
-        <div className="mx-auto max-w-lg rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
+      <div className="dashboard-bg flex min-h-screen items-center justify-center p-8">
+        <div className="max-w-md rounded-2xl border border-red-200 bg-white px-6 py-5 text-center shadow-sm">
+          <p className="text-sm text-red-700">{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f8f9fa]">
+    <div className="dashboard-bg flex min-h-screen flex-col">
       <EditorHeader
         title={title}
         onTitleChange={handleTitleChange}
@@ -149,25 +151,31 @@ export default function EditorPage() {
         onShare={() => setShareOpen(true)}
       />
 
-      <EditorMenuBar editor={editor} onDownload={handleDownload} />
-
-      {editor && <EditorToolbar editor={editor} />}
+      {editor && <EditorToolbar editor={editor} onDownload={handleDownload} />}
 
       {error && (
-        <div className="mx-4 mt-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
-          {error}
+        <div className="mx-auto mt-3 max-w-[816px] px-4">
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
+            {error}
+          </div>
         </div>
       )}
 
-      <main className="flex-1 overflow-auto px-4 pb-12 pt-2">
-        <div className="mx-auto max-w-[816px] bg-white shadow-[0_1px_3px_rgba(60,64,67,0.15)]">
-          <div className="px-12 py-10">
-            <DocumentEditor
-              content={contentJson}
-              onChange={handleContentChange}
-              onEditorReady={handleEditorReady}
-            />
+      <main className="flex-1 overflow-auto px-4 pb-16 pt-6">
+        <div className="editor-canvas-enter mx-auto max-w-[816px]">
+          <div className="editor-canvas-enter overflow-hidden rounded-lg border border-[#dadce0] bg-white shadow-sm">
+            <div className="px-8 py-10 sm:px-14 sm:py-12">
+              <DocumentEditor
+                content={contentJson}
+                onChange={handleContentChange}
+                onEditorReady={handleEditorReady}
+              />
+            </div>
           </div>
+
+          <p className="mt-4 text-center text-xs text-[#80868b]">
+            Changes save automatically every few seconds
+          </p>
         </div>
       </main>
 

@@ -9,11 +9,45 @@ body {
   min-height: 100svh;
 }
 
+.dashboard-bg {
+  background-color: #f8f9fa;
+}
+
+@keyframes dashboard-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-card-enter {
+  animation: dashboard-card-enter 0.45s ease backwards;
+}
+
+@keyframes editor-canvas-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.editor-canvas-enter {
+  animation: editor-canvas-enter 0.5s ease backwards;
+}
+
 .document-editor-content {
   color: #202124;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 11pt;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .ProseMirror {

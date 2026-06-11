@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ConfirmDialog from '../components/ConfirmDialog'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
+import NavDrawer from '../components/dashboard/NavDrawer'
 import { DocumentGridCard, DocumentListRow } from '../components/dashboard/DocumentCard'
 import NewDocumentStrip from '../components/dashboard/NewDocumentStrip'
 import ShareModal from '../components/ShareModal'
@@ -48,6 +49,7 @@ export default function DashboardPage() {
   const [shareDocument, setShareDocument] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
   const [documentToDelete, setDocumentToDelete] = useState(null)
+  const [navOpen, setNavOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState('recent')
@@ -220,7 +222,13 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen">
-      <DashboardHeader search={search} onSearchChange={setSearch} />
+      <DashboardHeader
+        search={search}
+        onSearchChange={setSearch}
+        onMenuClick={() => setNavOpen(true)}
+      />
+
+      <NavDrawer open={navOpen} onClose={() => setNavOpen(false)} />
 
       <NewDocumentStrip
         busy={busy}

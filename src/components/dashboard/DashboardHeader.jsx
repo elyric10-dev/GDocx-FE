@@ -1,12 +1,13 @@
 import DocsLogo from '../DocsLogo'
 import UserAvatarMenu from '../UserAvatarMenu'
 
-export default function DashboardHeader({ search, onSearchChange }) {
+export default function DashboardHeader({ search, onSearchChange, onMenuClick }) {
   return (
     <header className="sticky top-0 z-40 border-b border-[#dadce0]/80 bg-white/80 backdrop-blur-md">
       <div className="flex items-center gap-3 px-4 py-2.5 sm:gap-4 sm:px-6">
         <button
           type="button"
+          onClick={onMenuClick}
           className="rounded-full p-2.5 text-[#5f6368] transition hover:bg-[#f1f3f4]"
           aria-label="Main menu"
         >

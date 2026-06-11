@@ -1,3 +1,5 @@
+import { cn } from '../../utils/cn'
+
 const STARTER_TEMPLATES = [
   {
     id: 'blank',
@@ -67,124 +69,139 @@ const STARTER_TEMPLATES = [
   },
 ]
 
-function TemplatePreview({ variant }) {
-  if (variant === 'meeting') {
-    return (
-      <div className="flex h-full flex-col gap-1.5 p-3">
-        <div className="h-2 w-2/3 rounded bg-[#4285f4]/70" />
-        <div className="h-1 w-full rounded bg-[#dadce0]" />
-        <div className="h-1 w-5/6 rounded bg-[#dadce0]" />
-        <div className="mt-1 h-1.5 w-1/3 rounded bg-[#34a853]/60" />
-        <div className="flex gap-1">
-          <div className="h-1 w-1 rounded-full bg-[#dadce0]" />
-          <div className="h-1 flex-1 rounded bg-[#dadce0]" />
-        </div>
-        <div className="flex gap-1">
-          <div className="h-1 w-1 rounded-full bg-[#dadce0]" />
-          <div className="h-1 flex-1 rounded bg-[#dadce0]" />
-        </div>
-      </div>
-    )
-  }
-
-  if (variant === 'brief') {
-    return (
-      <div className="flex h-full flex-col gap-1.5 p-3">
-        <div className="h-2 w-3/4 rounded bg-[#ea4335]/60" />
-        <div className="h-1 w-full rounded bg-[#dadce0]" />
-        <div className="grid grid-cols-2 gap-1 pt-1">
-          <div className="h-6 rounded bg-[#fbbc04]/25" />
-          <div className="h-6 rounded bg-[#4285f4]/20" />
-        </div>
-        <div className="h-1 w-full rounded bg-[#dadce0]" />
-        <div className="h-1 w-4/5 rounded bg-[#dadce0]" />
-      </div>
-    )
-  }
-
-  if (variant === 'story') {
-    return (
-      <div className="flex h-full flex-col gap-1.5 p-3">
-        <div className="h-2 w-1/2 rounded bg-[#9334e6]/50" />
-        <div className="h-1 w-full rounded bg-[#dadce0]" />
-        <div className="h-1 w-full rounded bg-[#dadce0]" />
-        <div className="h-1 w-11/12 rounded bg-[#dadce0]" />
-        <div className="mt-auto h-1 w-2/3 rounded bg-[#dadce0]/80" />
-      </div>
-    )
-  }
-
-  return null
+const TEMPLATE_LINES = {
+  meeting: ['bg-[#4285f4]/40', 'bg-[#34a853]/30', 'bg-[#fbbc04]/35', 'bg-[#e8eaed]'],
+  brief: ['bg-[#ea4335]/40', 'bg-[#fbbc04]/35', 'bg-[#4285f4]/30', 'bg-[#e8eaed]'],
+  story: ['bg-[#9334e6]/40', 'bg-[#4285f4]/25', 'bg-[#34a853]/25', 'bg-[#e8eaed]'],
 }
 
-function BlankCard({ disabled, onClick }) {
+function TemplatePaper({ variant, title }) {
+  const lines = TEMPLATE_LINES[variant] || TEMPLATE_LINES.meeting
+
+  return (
+    <div
+      className="gdocx-new-doc-card__paper relative mx-auto mt-3 h-[calc(100%-0.75rem)] w-[78%] rounded-md"
+      style={{ transform: 'rotate(-2.5deg)' }}
+    >
+      <div className="border-b border-[#e8eaed]/80 px-2 py-1.5">
+        <p className="truncate text-[8px] font-semibold text-[var(--gdocx-text)]">{title}</p>
+      </div>
+      <div className="space-y-1 px-2 py-2">
+        {lines.map((color, index) => (
+          <div
+            key={index}
+            className={cn('h-0.5 rounded-full', color)}
+            style={{ width: `${90 - index * 12}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function NewDocCard({ label, subtitle, disabled, onClick, importStyle, previewClass, children }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="group flex w-[140px] shrink-0 flex-col gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+      className="group flex w-[148px] shrink-0 flex-col gap-2.5 text-left disabled:cursor-not-allowed disabled:opacity-60"
     >
-      <div className="relative flex h-[180px] items-center justify-center overflow-hidden rounded-xl border border-[#dadce0] bg-white shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:border-[#4285f4]/40 group-hover:shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#4285f4]/5 via-transparent to-[#fbbc04]/10 opacity-0 transition group-hover:opacity-100" />
-        <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#4285f4] via-[#34a853] to-[#fbbc04] p-[2px] shadow-md transition group-hover:scale-110">
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
-            <svg className="h-7 w-7 text-[#4285f4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-          </div>
+      <div
+        className={cn(
+          'gdocx-new-doc-card relative h-[180px] overflow-hidden rounded-2xl',
+          importStyle && 'gdocx-new-doc-card--import',
+        )}
+      >
+        <div className="gdocx-new-doc-card__stripe" aria-hidden />
+        <div
+          className={cn(
+            'relative flex h-[calc(100%-2px)] items-center justify-center',
+            previewClass || 'gdocx-new-doc-card__preview',
+          )}
+        >
+          {children}
         </div>
       </div>
-      <span className="text-left text-sm text-[#202124]">Blank document</span>
+      <div>
+        <span className="block text-sm font-semibold text-[var(--gdocx-text)] transition group-hover:text-[var(--gdocx-blue-dark)]">
+          {label}
+        </span>
+        {subtitle && (
+          <span className="mt-0.5 block text-xs text-[var(--gdocx-text-secondary)]">{subtitle}</span>
+        )}
+      </div>
     </button>
+  )
+}
+
+function BlankCard({ disabled, onClick }) {
+  return (
+    <NewDocCard label="Blank document" subtitle="Start fresh" disabled={disabled} onClick={onClick}>
+      <div className="gdocx-new-doc-card__plus flex h-14 w-14 items-center justify-center rounded-2xl p-[2px]">
+        <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-white">
+          <svg className="h-7 w-7 text-[var(--gdocx-blue)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </div>
+      </div>
+    </NewDocCard>
   )
 }
 
 function ImportCard({ disabled, onClick }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <NewDocCard
+      label="Import file"
+      subtitle=".txt · .md · .docx"
       disabled={disabled}
-      className="group flex w-[140px] shrink-0 flex-col gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+      onClick={onClick}
+      importStyle
+      previewClass="gdocx-new-doc-card__preview"
     >
-      <div className="flex h-[180px] items-center justify-center rounded-xl border border-dashed border-[#dadce0] bg-[#f8f9fa] transition duration-300 group-hover:-translate-y-1 group-hover:border-[#4285f4]/50 group-hover:bg-white group-hover:shadow-lg">
-        <svg className="h-10 w-10 text-[#5f6368] transition group-hover:text-[#4285f4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-        </svg>
+      <div className="flex flex-col items-center gap-2">
+        <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#e8f0fe] text-[var(--gdocx-blue-dark)] shadow-sm transition group-hover:scale-105">
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          </svg>
+        </span>
+        <span className="text-[10px] font-medium text-[var(--gdocx-text-muted)]">Drop or browse</span>
       </div>
-      <span className="text-left text-sm text-[#202124]">Import file</span>
-      <span className="-mt-1 text-left text-xs text-[#5f6368]">.txt · .md · .docx</span>
-    </button>
+    </NewDocCard>
   )
 }
 
 function TemplateCard({ template, disabled, onClick }) {
   return (
-    <button
-      type="button"
-      onClick={() => onClick(template)}
+    <NewDocCard
+      label={template.label}
+      subtitle={template.subtitle}
       disabled={disabled}
-      className="group flex w-[140px] shrink-0 flex-col gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+      onClick={() => onClick(template)}
+      previewClass={`gdocx-new-doc-card__preview--${template.preview}`}
     >
-      <div className="h-[180px] overflow-hidden rounded-xl border border-[#dadce0] bg-white shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:border-[#4285f4]/30 group-hover:shadow-lg">
-        <TemplatePreview variant={template.preview} />
-      </div>
-      <span className="text-left text-sm text-[#202124]">{template.label}</span>
-      <span className="-mt-1 text-left text-xs text-[#5f6368]">{template.subtitle}</span>
-    </button>
+      <TemplatePaper variant={template.preview} title={template.title} />
+    </NewDocCard>
   )
 }
 
 export default function NewDocumentStrip({ busy, onBlank, onImport, onTemplate }) {
   return (
-    <section className="border-b border-[#dadce0]/60 bg-[#f8f9fa]">
-      <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-8">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-medium text-[#202124]">Start a new document</h2>
+    <section className="gdocx-new-doc-strip">
+      <div className="relative mx-auto max-w-[1400px] px-4 py-7 sm:px-8">
+        <div className="mb-5 flex items-center gap-3">
+          <div className="h-9 w-1 shrink-0 rounded-full bg-gradient-to-b from-[var(--gdocx-blue)] via-[var(--gdocx-green)] to-[var(--gdocx-yellow)]" aria-hidden />
+          <div>
+            <h2 className="text-base font-semibold tracking-tight text-[var(--gdocx-text)]">
+              Start a new document
+            </h2>
+            <p className="mt-0.5 text-xs text-[var(--gdocx-text-secondary)]">
+              Blank page, import a file, or jump in with a template
+            </p>
+          </div>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-4 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <BlankCard disabled={busy} onClick={onBlank} />
           <ImportCard disabled={busy} onClick={onImport} />
           {STARTER_TEMPLATES.filter((t) => t.type === 'template').map((template) => (

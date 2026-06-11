@@ -250,6 +250,99 @@
   }
 }
 
+/* New document strip */
+.gdocx-new-doc-strip {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid color-mix(in srgb, var(--gdocx-border) 70%, transparent);
+  background:
+    radial-gradient(ellipse 60% 80% at 10% 50%, rgba(66, 133, 244, 0.08), transparent 55%),
+    radial-gradient(ellipse 50% 70% at 90% 40%, rgba(52, 168, 83, 0.06), transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 249, 250, 0.45) 100%);
+  backdrop-filter: blur(8px);
+}
+
+.gdocx-new-doc-card {
+  border: 1px solid color-mix(in srgb, var(--gdocx-border) 88%, #9aa0a6);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 2px 8px rgba(60, 64, 67, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition:
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.28s ease;
+}
+
+.gdocx-new-doc-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--gdocx-blue) 30%, var(--gdocx-border));
+  box-shadow: 0 14px 32px rgba(66, 133, 244, 0.14);
+}
+
+.gdocx-new-doc-card--import {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--gdocx-blue) 35%, var(--gdocx-border));
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.gdocx-new-doc-card--import:hover {
+  border-style: solid;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.gdocx-new-doc-card__stripe {
+  height: 2px;
+  background: var(--gdocx-gradient-brand);
+  opacity: 0.8;
+}
+
+.gdocx-new-doc-card__preview {
+  background:
+    radial-gradient(ellipse 80% 70% at 25% 25%, rgba(66, 133, 244, 0.12), transparent 55%),
+    radial-gradient(ellipse 70% 60% at 80% 80%, rgba(251, 188, 4, 0.08), transparent 50%),
+    linear-gradient(160deg, #f4f8ff 0%, #f8f9fa 60%, #faf6ee 100%);
+}
+
+.gdocx-new-doc-card__preview--meeting {
+  background:
+    radial-gradient(ellipse 80% 70% at 25% 25%, rgba(66, 133, 244, 0.14), transparent 55%),
+    linear-gradient(160deg, #eef4fd 0%, #f8f9fa 100%);
+}
+
+.gdocx-new-doc-card__preview--brief {
+  background:
+    radial-gradient(ellipse 80% 70% at 25% 25%, rgba(234, 67, 53, 0.1), transparent 55%),
+    linear-gradient(160deg, #fff5f3 0%, #f8f9fa 100%);
+}
+
+.gdocx-new-doc-card__preview--story {
+  background:
+    radial-gradient(ellipse 80% 70% at 25% 25%, rgba(147, 51, 234, 0.12), transparent 55%),
+    linear-gradient(160deg, #f7f4ff 0%, #f8f9fa 100%);
+}
+
+.gdocx-new-doc-card__paper {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 24px rgba(60, 64, 67, 0.1);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gdocx-new-doc-card:hover .gdocx-new-doc-card__paper {
+  transform: translateY(-2px) rotate(-1.5deg);
+}
+
+.gdocx-new-doc-card__plus {
+  background: linear-gradient(135deg, #5b9bf5, var(--gdocx-green), var(--gdocx-yellow));
+  box-shadow: 0 8px 24px rgba(66, 133, 244, 0.35);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gdocx-new-doc-card:hover .gdocx-new-doc-card__plus {
+  transform: scale(1.08);
+}
+
 /* Document cards */
 .gdocx-doc-card {
   border: 1px solid color-mix(in srgb, var(--gdocx-border) 88%, #9aa0a6);

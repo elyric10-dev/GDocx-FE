@@ -48,6 +48,91 @@ body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 11pt;
   line-height: 1.6;
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-page {
+  position: relative;
+  min-height: 65vh;
+  overflow: hidden;
+}
+
+/* Hold Alt/Option to click through text and select layered images */
+.layer-image-pick .ProseMirror > *:not([data-text-wrap='behind']):not([data-text-wrap='front']) {
+  pointer-events: none;
+}
+
+.layer-image-pick [data-text-wrap='behind'],
+.layer-image-pick [data-text-wrap='front'] {
+  cursor: crosshair;
+}
+
+/* Text layers above behind/front images */
+.editor-page .ProseMirror > *:not([data-text-wrap='behind']):not([data-text-wrap='front']) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Resizable images (tiptap-extension-resize-image) */
+.ProseMirror .image-resize-wrapper,
+.ProseMirror [data-text-wrap] {
+  max-width: 100%;
+  line-height: 0;
+}
+
+.ProseMirror .image-resize-wrapper {
+  margin: 0.75em 0;
+}
+
+.ProseMirror [data-text-wrap='behind'],
+.ProseMirror [data-text-wrap='front'] {
+  margin: 0;
+}
+
+.ProseMirror [data-text-wrap='wrap-left'] {
+  clear: none;
+}
+
+.ProseMirror [data-text-wrap='wrap-right'] {
+  clear: none;
+}
+
+.document-editor-content::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.ProseMirror [data-text-wrap='behind'] {
+  position: absolute;
+  z-index: 0;
+  left: var(--img-x, 0px);
+  top: var(--img-y, 0px);
+  margin: 0;
+  cursor: move;
+  pointer-events: auto;
+}
+
+.ProseMirror-selectednode[data-text-wrap='behind'] {
+  z-index: 2;
+  outline: 2px solid #1a73e8;
+  outline-offset: 1px;
+}
+
+.ProseMirror [data-text-wrap='front'] {
+  position: absolute;
+  z-index: 2;
+  left: var(--img-x, 0px);
+  top: var(--img-y, 0px);
+  margin: 0;
+  cursor: move;
+  pointer-events: auto;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
 }
 
 .ProseMirror {
@@ -161,4 +246,9 @@ body {
   border: none;
   border-top: 1px solid #e2e8f0;
   margin: 0.5em 0;
+}
+
+.ProseMirror mark {
+  border-radius: 0.125rem;
+  padding: 0.1em 0;
 }

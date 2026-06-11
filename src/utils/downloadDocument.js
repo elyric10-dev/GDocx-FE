@@ -1,9 +1,8 @@
 import { generateHTML } from '@tiptap/html'
 import { generateText } from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
+import { editorExtensions } from './editorExtensions'
 
-export const editorExtensions = [StarterKit, Underline]
+export { editorExtensions }
 
 function sanitizeFilename(title) {
   const safe = title.trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase()
@@ -50,6 +49,8 @@ export function downloadDocument(title, contentJson, format) {
     blockquote { border-left: 3px solid #dadce0; margin: 0.25em 0; padding-left: 0.75em; color: #5f6368; }
     pre { background: #f1f3f4; border-radius: 4px; padding: 0.75rem; overflow-x: auto; }
     hr { border: none; border-top: 1px solid #dadce0; margin: 1rem 0; }
+    img { max-width: 100%; height: auto; border-radius: 4px; margin: 0.5em 0; }
+    mark { border-radius: 2px; padding: 0.1em 0; }
   </style>
 </head>
 <body>

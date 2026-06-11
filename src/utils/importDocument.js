@@ -1,7 +1,7 @@
 import { generateJSON } from '@tiptap/html'
 import { marked } from 'marked'
 import mammoth from 'mammoth'
-import { editorExtensions } from './downloadDocument'
+import { editorExtensions } from './editorExtensions'
 
 const SUPPORTED_EXTENSIONS = ['txt', 'md', 'docx']
 

@@ -22,11 +22,16 @@ function DocumentPreview({ title }) {
   )
 }
 
-function DocumentMenu({ doc, isOwned, onShare, onDelete, deleting }) {
+function DocumentMenu({ doc, canManage, onShare, onDelete, deleting, menuUp = false }) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
+  const showShare = canManage && onShare
+  const showDelete = canManage && onDelete
+  const hasActions = showShare || showDelete
 
   useEffect(() => {
+    if (!hasActions) return undefined
+
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setOpen(false)
@@ -34,7 +39,13 @@ function DocumentMenu({ doc, isOwned, onShare, onDelete, deleting }) {
     }
     window.document.addEventListener('mousedown', handleClickOutside)
     return () => window.document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [hasActions])
+
+  if (!hasActions) return null
+
+  const menuPositionClass = menuUp
+    ? 'bottom-full mb-1'
+    : 'top-full mt-1'
 
   return (
     <div ref={menuRef} className="relative">
@@ -55,8 +66,10 @@ function DocumentMenu({ doc, isOwned, onShare, onDelete, deleting }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-1 min-w-[160px] rounded-lg border border-[#dadce0] bg-white py-1 shadow-lg">
-          {isOwned && onShare && (
+        <div
+          className={`absolute right-0 z-50 min-w-[160px] rounded-lg border border-[#dadce0] bg-white py-1 shadow-lg ${menuPositionClass}`}
+        >
+          {showShare && (
             <button
               type="button"
               className="block w-full px-4 py-2 text-left text-sm text-[#202124] hover:bg-[#f1f3f4]"
@@ -68,7 +81,7 @@ function DocumentMenu({ doc, isOwned, onShare, onDelete, deleting }) {
               Share
             </button>
           )}
-          {isOwned && onDelete && (
+          {showDelete && (
             <button
               type="button"
               disabled={deleting}
@@ -87,9 +100,16 @@ function DocumentMenu({ doc, isOwned, onShare, onDelete, deleting }) {
   )
 }
 
-export function DocumentGridCard({ document, variant, onShare, onDelete, deletingId, style }) {
-  const isOwned = variant === 'owned'
-  const isShared = variant === 'shared'
+export function DocumentGridCard({
+  document,
+  variant,
+  canManage,
+  onShare,
+  onDelete,
+  deletingId,
+  style,
+}) {
+  const isSharedWithMe = !canManage && variant === 'shared'
 
   return (
     <article
@@ -100,26 +120,34 @@ export function DocumentGridCard({ document, variant, onShare, onDelete, deletin
         <Link to={`/documents/${document.id}`} className="block">
           <div className="relative h-[140px] overflow-hidden rounded-t-xl">
             <DocumentPreview title={document.title} />
-            {isShared && (
-              <span className="absolute right-2 top-2 rounded-full bg-violet-600/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm">
-                Shared
+            {isSharedWithMe && (
+              <span
+                className="absolute right-2 top-2 rounded-full bg-violet-600/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm"
+                title="Someone else shared this with you"
+              >
+                Shared with me
               </span>
             )}
-            {!isShared && document.share_count > 0 && (
-              <span className="absolute right-2 top-2 rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm">
+            {canManage && document.share_count > 0 && (
+              <span
+                className="absolute right-2 top-2 rounded-full bg-emerald-600/90 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm"
+                title="You shared this with others"
+              >
                 {document.share_count} shared
               </span>
             )}
           </div>
 
-          <div className="flex items-start gap-2 border-t border-[#e8eaed] px-3 py-2.5 pr-10">
+          <div
+            className={`flex items-start gap-2 border-t border-[#e8eaed] px-3 py-2.5 ${canManage ? 'pr-10' : ''}`}
+          >
             <svg className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#4285f4]" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z" />
             </svg>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-[#202124]">{document.title}</p>
               <p className="mt-0.5 truncate text-xs text-[#5f6368]">
-                {isShared && document.owner_email
+                {isSharedWithMe && document.owner_email
                   ? `${document.owner_email} · `
                   : ''}
                 Opened {formatOpenedDate(document.updated_at)}
@@ -131,10 +159,11 @@ export function DocumentGridCard({ document, variant, onShare, onDelete, deletin
         <div className="absolute bottom-2 right-1.5 z-10">
           <DocumentMenu
             doc={document}
-            isOwned={isOwned}
+            canManage={canManage}
             onShare={onShare}
             onDelete={onDelete}
             deleting={deletingId === document.id}
+            menuUp
           />
         </div>
       </div>
@@ -142,9 +171,15 @@ export function DocumentGridCard({ document, variant, onShare, onDelete, deletin
   )
 }
 
-export function DocumentListRow({ document, variant, onShare, onDelete, deletingId }) {
-  const isOwned = variant === 'owned'
-  const isShared = variant === 'shared'
+export function DocumentListRow({
+  document,
+  variant,
+  canManage,
+  onShare,
+  onDelete,
+  deletingId,
+}) {
+  const isSharedWithMe = !canManage && variant === 'shared'
 
   return (
     <li className="group flex items-center gap-4 border-b border-[#e8eaed] px-2 py-3 transition hover:bg-[#f8f9fa]">
@@ -157,26 +192,26 @@ export function DocumentListRow({ document, variant, onShare, onDelete, deleting
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <p className="truncate font-medium text-[#202124]">{document.title}</p>
-            {isShared && (
+            {isSharedWithMe && (
               <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
                 Shared with me
               </span>
             )}
-            {!isShared && document.share_count > 0 && (
+            {canManage && document.share_count > 0 && (
               <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
                 Shared · {document.share_count}
               </span>
             )}
           </div>
           <p className="mt-0.5 text-sm text-[#5f6368]">
-            {isShared && document.owner_email ? `${document.owner_email} · ` : ''}
+            {isSharedWithMe && document.owner_email ? `${document.owner_email} · ` : ''}
             Opened {formatOpenedDate(document.updated_at)}
           </p>
         </div>
       </Link>
       <DocumentMenu
         doc={document}
-        isOwned={isOwned}
+        canManage={canManage}
         onShare={onShare}
         onDelete={onDelete}
         deleting={deletingId === document.id}

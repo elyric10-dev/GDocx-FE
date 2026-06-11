@@ -102,9 +102,12 @@ export default function DashboardPage() {
     } else if (filter === 'shared') {
       docs = sharedDocuments.map((doc) => ({ ...doc, _variant: 'shared' }))
     } else {
+      const ownedIds = new Set(ownedDocuments.map((doc) => doc.id))
       docs = [
         ...ownedDocuments.map((doc) => ({ ...doc, _variant: 'owned' })),
-        ...sharedDocuments.map((doc) => ({ ...doc, _variant: 'shared' })),
+        ...sharedDocuments
+          .filter((doc) => !ownedIds.has(doc.id))
+          .map((doc) => ({ ...doc, _variant: 'shared' })),
       ]
     }
 
@@ -176,6 +179,10 @@ export default function DashboardPage() {
     } finally {
       setDeletingId(null)
     }
+  }
+
+  function canManageDocument(document) {
+    return Boolean(user?.id && String(document.owner_id) === String(user.id))
   }
 
   function renderEmptyState() {
@@ -332,8 +339,9 @@ export default function DashboardPage() {
                     key={`${document._variant}-${document.id}`}
                     document={document}
                     variant={document._variant}
-                    onShare={document._variant === 'owned' ? setShareDocument : undefined}
-                    onDelete={document._variant === 'owned' ? setDocumentToDelete : undefined}
+                    canManage={canManageDocument(document)}
+                    onShare={canManageDocument(document) ? setShareDocument : undefined}
+                    onDelete={canManageDocument(document) ? setDocumentToDelete : undefined}
                     deletingId={deletingId}
                     style={{ animationDelay: `${index * 40}ms` }}
                   />
@@ -355,8 +363,9 @@ export default function DashboardPage() {
                   key={`${document._variant}-${document.id}`}
                   document={document}
                   variant={document._variant}
-                  onShare={document._variant === 'owned' ? setShareDocument : undefined}
-                  onDelete={document._variant === 'owned' ? setDocumentToDelete : undefined}
+                  canManage={canManageDocument(document)}
+                  onShare={canManageDocument(document) ? setShareDocument : undefined}
+                  onDelete={canManageDocument(document) ? setDocumentToDelete : undefined}
                   deletingId={deletingId}
                 />
               ))

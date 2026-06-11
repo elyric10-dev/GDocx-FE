@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import DocumentEditor from '../components/DocumentEditor'
 import EditorHeader from '../components/EditorHeader'
 import EditorToolbar from '../components/EditorToolbar'
+import ImageWrapToolbar from '../components/ImageWrapToolbar'
 import ShareModal from '../components/ShareModal'
 import { useAuth } from '../context/AuthContext'
 import { documentService } from '../services/documentService'
@@ -152,6 +153,7 @@ export default function EditorPage() {
       />
 
       {editor && <EditorToolbar editor={editor} onDownload={handleDownload} />}
+      {editor && <ImageWrapToolbar editor={editor} />}
 
       {error && (
         <div className="mx-auto mt-3 max-w-[816px] px-4">
@@ -164,8 +166,9 @@ export default function EditorPage() {
       <main className="flex-1 overflow-auto px-4 pb-16 pt-6">
         <div className="editor-canvas-enter mx-auto max-w-[816px]">
           <div className="editor-canvas-enter overflow-hidden rounded-lg border border-[#dadce0] bg-white shadow-sm">
-            <div className="px-8 py-10 sm:px-14 sm:py-12">
+            <div className="editor-page relative px-8 py-10 sm:px-14 sm:py-12">
               <DocumentEditor
+                documentId={id}
                 content={contentJson}
                 onChange={handleContentChange}
                 onEditorReady={handleEditorReady}
